@@ -188,6 +188,9 @@ const HomePage = () => {
               }
               cardContent={
                 <CardContent className="p-0">
+                  <p className="dark:text-washed-purple-800 mt-[-10px] mb-4">
+                    {card.description}
+                  </p>
                   <span
                     className="font-normal 
                     text-2xl
@@ -202,9 +205,9 @@ const HomePage = () => {
                   ) : (
                     ""
                   )}
-                  <p className="dark:text-washed-purple-800">
+                  {/* <p className="dark:text-washed-purple-800">
                     {card.description}
-                  </p>
+                  </p> */}
                   <Button className="whitespace-nowrap w-full mt-4">
                     {card.planType === PRICING_PLANS.proplan
                       ? "Go Pro"

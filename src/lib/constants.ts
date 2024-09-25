@@ -112,9 +112,9 @@ export const USERS = [
 
 export const PRICING_CARDS = [
   {
-    planType: "Starter Plan",
+    planType: "Starter",
     price: "0",
-    description: "Limited block trials  for teams",
+    description: "Perfect for small projects",
     highlightFeature: "",
     freatures: [
       "Five folders",
@@ -125,9 +125,9 @@ export const PRICING_CARDS = [
     ],
   },
   {
-    planType: "Pro Plan",
+    planType: "Pro",
     price: "59",
-    description: "Billed annually",
+    description: "Perfect for growing teams",
     highlightFeature: "Everything in free +",
     freatures: [
       "Unlimited folders",
@@ -139,6 +139,6 @@ export const PRICING_CARDS = [
   },
 ];
 
-export const PRICING_PLANS = { proplan: "Pro Plan", freeplan: "Free Plan" };
+export const PRICING_PLANS = { proplan: "Pro", freeplan: "Free" };
 
 export const MAX_FOLDERS_FREE_PLAN = 5;
