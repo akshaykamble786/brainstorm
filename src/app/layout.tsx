@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/lib/providers/next-theme-provider";
 import { Inter } from '@next/font/google';
+import db from "@/lib/supabase/db";
+
 
 export const metadata: Metadata = {
   title: "Brainstorm",
