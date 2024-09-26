@@ -1,21 +1,19 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import Logo from "../../../public/logo.svg";
 import {
   NavigationMenu,
   NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-  NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import Logo from "../logo";
 
 const routes = [
   { title: "Features", href: "/features" },
@@ -68,25 +66,23 @@ const Header = () => {
   return (
     <header className="p-4 flex justify-center items-center">
       <Link href={"/"} className="w-full justify-left items-center gap-2 flex">
-        <Image src={Logo} alt="Brainstorm Logo" width={25} height={25} />
-        <span className="font-semibold dark:text-washed-purple-600">
-          Brainstorm
-        </span>
+        <Logo />
       </Link>
 
       <NavigationMenu className="hidden md:block">
-        <NavigationMenuList className="gap-6">
+        <NavigationMenuList className="gap-2">
+
           <NavigationMenuItem>
             <NavigationMenuTrigger
-              onClick={() => setPath("#resources")}
+              onClick={() => setPath("#features")}
               className={cn({
-                "dark:text-white": path === "#resources",
-                "dark:text-white/40": path !== "#resources",
+                "dark:text-white": path === "#features",
+                "dark:text-white/40": path !== "#features",
                 "font-normal": true,
                 "text-lg": true,
               })}
             >
-              Resources
+              Features
             </NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul
@@ -152,7 +148,7 @@ const Header = () => {
             </NavigationMenuContent>
           </NavigationMenuItem>
 
-          <NavigationMenuItem>
+          {/* <NavigationMenuItem>
             <NavigationMenuContent>
               <ul
                 className="grid w-[400px]
@@ -174,21 +170,36 @@ const Header = () => {
                 ))}
               </ul>
             </NavigationMenuContent>
-          </NavigationMenuItem>
+          </NavigationMenuItem> */}
+          
           <NavigationMenuItem>
-            <Link href={"#"}>
-                <NavigationMenuLink className={cn(navigationMenuTriggerStyle(),{
-                    'dark:text-white':path === '#testimonials',
-                    'dark:text-white/40':path === '#testimonials',
-                    'font-normal':true,
-                    'text-lg':true,
-                })}>
-                    Testimonials
-                </NavigationMenuLink>
-            </Link>
+            <NavigationMenuLink
+              className={cn(navigationMenuTriggerStyle(), {
+                "dark:text-white": path === "#testimonials",
+                "dark:text-white/40": path !== "#testimonials",
+                "font-normal": true,
+                "text-lg": true,
+              })}
+            >
+              Testimonials
+            </NavigationMenuLink>
           </NavigationMenuItem>
+
         </NavigationMenuList>
       </NavigationMenu>
+
+      <aside className="flex w-full justify-end gap-4">
+        <Link href={"/login"}>
+          <Button variant="secondary" className="px-6 hidden sm:block">
+            Login
+          </Button>
+        </Link>
+        <Link href={"/signup"}>
+          <Button variant="default" className="whitespace-nowrap">
+            Sign up
+          </Button>
+        </Link>
+      </aside>
     </header>
   );
 };

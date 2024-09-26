@@ -205,9 +205,6 @@ const HomePage = () => {
                   ) : (
                     ""
                   )}
-                  {/* <p className="dark:text-washed-purple-800">
-                    {card.description}
-                  </p> */}
                   <Button className="whitespace-nowrap w-full mt-4">
                     {card.planType === PRICING_PLANS.proplan
                       ? "Go Pro"

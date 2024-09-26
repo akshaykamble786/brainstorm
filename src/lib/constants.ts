@@ -126,7 +126,7 @@ export const PRICING_CARDS = [
   },
   {
     planType: "Pro",
-    price: "59",
+    price: "49",
     description: "Perfect for growing teams",
     highlightFeature: "Everything in free +",
     freatures: [

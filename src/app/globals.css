@@ -70,7 +70,7 @@ body {
 }
 
 .animate-slide{
-  animation: 25s slide linear infinite;
+  animation: 15s slide linear infinite;
 }
 
 @keyframes slide{
