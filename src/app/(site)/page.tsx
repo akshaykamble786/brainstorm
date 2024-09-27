@@ -25,12 +25,12 @@ const HomePage = () => {
         />
         <div className="flex gap-4">
           <div className="bg-white p-[2px] mt-6 rounded-xl bg-gradient-to-r from-primary to-brand-primaryBlue sm:w-[200px]">
-            <Button className="w-full rounded-[10px] p-6 text-lg bg-background">
+            <Button variant="default" className="w-full rounded-[10px] p-6 text-lg bg-background">
               Get Started &rarr;
             </Button>
           </div>
           <div className="bg-white p-[2px] mt-6 rounded-xl bg-gradient-to-r from-primary to-brand-primaryBlue sm:w-[200px]">
-            <Button className="w-full rounded-[10px] p-6 text-lg bg-background">
+            <Button variant="default" className="w-full rounded-[10px] p-6 text-lg bg-background">
               Read docs
             </Button>
           </div>
@@ -205,7 +205,7 @@ const HomePage = () => {
                   ) : (
                     ""
                   )}
-                  <Button className="whitespace-nowrap w-full mt-4">
+                  <Button variant="default" className="whitespace-nowrap w-full mt-4">
                     {card.planType === PRICING_PLANS.proplan
                       ? "Go Pro"
                       : "Get Started"}
