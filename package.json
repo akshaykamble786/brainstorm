@@ -7,12 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "pull": "drizzle-kit pull",
+    "pull": "drizzle-kit introspect",
     "generate": "drizzle-kit generate",
     "push": "drizzle-kit push",
     "drop": "drizzle-kit drop",
-    "check": "drizzle-kit check:pg",
-    "up": "drizzle-kit up:pg"
+    "check": "drizzle-kit check",
+    "up": "drizzle-kit up"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

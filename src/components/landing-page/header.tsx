@@ -203,12 +203,12 @@ const Header = () => {
 
       <aside className="flex w-full justify-end gap-4">
         <Link href={"/login"}>
-          <Button variant="secondary" className="px-6 hidden sm:block">
+          <Button variant="btn-secondary" className="px-6 hidden sm:block">
             Login
           </Button>
         </Link>
         <Link href={"/signup"}>
-          <Button variant="default" className="whitespace-nowrap">
+          <Button variant="btn-primary" className="whitespace-nowrap">
             Sign up
           </Button>
         </Link>

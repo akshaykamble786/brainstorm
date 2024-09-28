@@ -3,7 +3,7 @@
 import { FormSchema } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { Form, SubmitHandler, useForm } from "react-hook-form";
+import { Form, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -21,6 +21,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Loader from "@/components/loader";
+import Image from "next/image";
+import { actionLoginUser } from "@/lib/server-actions/auth-actions";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -36,10 +38,17 @@ const LoginPage = () => {
 
   const onSubmit: SubmitHandler<z.infer<typeof FormSchema>> = async (
     formData
-  ) => {};
+  ) => {
+    const { error } = await actionLoginUser(formData);
+    if(error){
+      form.reset();
+      setSubmitError(error.message);
+    }
+    router.replace('/dashboard');
+  };
 
   return (
-    <Form {...form}>
+    <FormProvider {...form}>
       <form
         onChange={() => {
           if (submitError) setSubmitError("");
@@ -50,10 +59,7 @@ const LoginPage = () => {
         <Link href="/" className="w-full flex justify-left items-center">
           <Logo />
         </Link>
-        <FormDescription
-          className="
-        text-foreground/60"
-        >
+        <FormDescription className="text-foreground/60">
           An all-In-One Collaboration and Productivity Platform
         </FormDescription>
 
@@ -100,19 +106,18 @@ const LoginPage = () => {
             Sign Up
           </Link>
         </span>
-        <Separator></Separator>
+        <Separator />
         <Button
           type="button"
-          className="w-full relative"
+          className="w-full relative flex items-center justify-center"
           size="lg"
           variant="outline"
-          icon={Google}
-          logoStyles=""
         >
+          <Image src={Google} alt="google logo" width={25} height={25} className="size-5 mr-2"/>
           Login with Google
         </Button>
       </form>
-    </Form>
+    </FormProvider>
   );
 };
 
