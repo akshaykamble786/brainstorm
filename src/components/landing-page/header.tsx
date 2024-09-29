@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
-import Logo from "../logo";
+import Logo from "../global/logo";
 
 const routes = [
   { title: "Features", href: "/features" },

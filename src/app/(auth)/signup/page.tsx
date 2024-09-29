@@ -1,7 +1,7 @@
 "use client";
 
-import Loader from "@/components/loader";
-import Logo from "@/components/logo";
+import Loader from "@/components/global/loader"; 
+import Logo from "@/components/global/logo";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {

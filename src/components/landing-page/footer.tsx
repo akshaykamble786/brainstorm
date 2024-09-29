@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "../logo";
+import Logo from "../global/logo";
 import Link from "next/link";
 
 const Footer = () => {

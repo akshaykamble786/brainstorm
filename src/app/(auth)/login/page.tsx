@@ -7,7 +7,7 @@ import { Form, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import Logo from "@/components/logo";
+import Logo from "@/components/global/logo";
 import Google from "../../../../public/google.png";
 
 import {
@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import Loader from "@/components/loader";
+import Loader from "@/components/global/loader";
 import Image from "next/image";
 import { actionLoginUser } from "@/lib/server-actions/auth-actions";
 
