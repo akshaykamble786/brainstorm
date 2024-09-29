@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/lib/providers/next-theme-provider";
 import db from "@/lib/supabase/db";
 import { DM_Sans } from "@next/font/google";
 import { twMerge } from "tailwind-merge";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Brainstorm",
@@ -21,7 +22,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={twMerge('bg-background',dmSans.className)}
       >
-        <ThemeProvider attribute="class" enableSystem defaultTheme="dark">{children}</ThemeProvider>
+        <ThemeProvider attribute="class" enableSystem defaultTheme="dark">
+          <Toaster/>
+          {children}
+          </ThemeProvider>
       </body>
     </html>
   );
