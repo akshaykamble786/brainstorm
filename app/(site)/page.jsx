@@ -197,25 +197,28 @@ const HomePage = () => {
                   <p className="dark:text-washed-purple-800 mt-[-10px] mb-4">
                     {card.description}
                   </p>
-                  <span
-                    className="font-normal 
-                    text-2xl
-                "
-                  >
-                    ${card.price}
-                  </span>
-                  {+card.price > 0 ? (
-                    <span className="dark:text-washed-purple-800 ml-1">
-                      /mo
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                  <Button variant="default">
-                    {card.planType === PRICING_PLANS.proplan
-                      ? "Go Pro"
-                      : "Get Started"}
-                  </Button>
+                  <div className="flex flex-col gap-4">
+                    <div>
+                      <span className="font-normal text-2xl">
+                        ${card.price}
+                      </span>
+                      {+card.price > 0 ? (
+                        <span className="dark:text-washed-purple-800 ml-1">
+                          /mo
+                        </span>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                    <Button 
+                      variant="default" 
+                      className="w-full"
+                    >
+                      {card.planType === PRICING_PLANS.proplan
+                        ? "Go Pro"
+                        : "Get Started"}
+                    </Button>
+                  </div>
                 </CardContent>
               }
               cardFooter={

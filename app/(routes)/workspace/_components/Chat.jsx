@@ -32,8 +32,9 @@ import {
 import { useUser } from "@clerk/nextjs";
 import { useToast } from "@/hooks/use-toast";
 import { chatService } from "@/lib/chat-service";
-import { rateLimitService } from "@/lib/rate-limit"
+import { rateLimitService } from "@/lib/rate-limit";
 import { ToastAction } from "@/components/ui/toast";
+import UseSubscription from "@/hooks/use-subscription";
 
 export function Chat({ editorContent }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,6 +50,7 @@ export function Chat({ editorContent }) {
 
   const { user } = useUser();
   const { toast } = useToast();
+  const { hasActiveSubscription } = UseSubscription();
 
   const {
     messages,
@@ -112,7 +114,7 @@ export function Chat({ editorContent }) {
               message: { value: suggestedQuery },
             },
           };
-          await handleSubmit(fakeEvent);
+          await handleFormSubmit(fakeEvent);
         } catch (error) {
           console.error("Error submitting suggested query:", error);
           toast({
@@ -126,7 +128,7 @@ export function Chat({ editorContent }) {
 
       submitQuery();
     }
-  }, [suggestedQuery, handleSubmit]);
+  }, [suggestedQuery]);
 
   useEffect(() => {
     if (scrollAreaRef.current && lastMessageRef.current) {
@@ -146,15 +148,15 @@ export function Chat({ editorContent }) {
           const initialMessages = [
             {
               id: `msg-${Date.now()}-assistant`,
-              role: 'assistant',
+              role: "assistant",
               content: `Hi ${user.firstName}! How can I help you with your document?`,
-              createdAt: Date.now()
-            }
+              createdAt: Date.now(),
+            },
           ];
-          
+
           const chatId = await chatService.createChat(user.id);
           setCurrentChatId(chatId);
-          
+
           await chatService.updateChat(chatId, initialMessages);
           setMessages(initialMessages);
         } catch (error) {
@@ -241,11 +243,111 @@ export function Chat({ editorContent }) {
     }
   };
 
-  const handleSuggestedQuery = (query) => {
-    setInput(query);
-    setSuggestedQuery(query);
-  };
+  // const handleSuggestedQuery = async (query) => {
+  //   if (!user) {
+  //     toast({
+  //       title: "Please sign in",
+  //       description: "You need to be signed in to use AI features",
+  //       variant: "destructive",
+  //     });
+  //     return;
+  //   }
 
+  //   try {
+  //     const { allowed, remainingMessages } =
+  //       await rateLimitService.checkAndIncrementUsage(user.id);
+
+  //     if (!allowed) {
+  //       toast({
+  //         title: "Daily messages limit reached",
+  //         description: "You're out of free messages. Upgrade to more access",
+  //         variant: "destructive",
+  //         action: (
+  //           <ToastAction
+  //             altText="Upgrade to Pro"
+  //             onClick={() => router.push("/pricing")}
+  //           >
+  //             Upgrade to Pro
+  //           </ToastAction>
+  //         ),
+  //       });
+  //       return;
+  //     }
+
+  //     setInput(query);
+  //     setSuggestedQuery(query);
+
+  //     if (remainingMessages <= 2) {
+  //       toast({
+  //         title: "Message limit reminder",
+  //         description: `You have ${remainingMessages} messages remaining today`,
+  //         variant: "default",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error checking rate limit:", error);
+  //     toast({
+  //       title: "Failed to send message",
+  //       description: "Please try again",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
+
+  const handleSuggestedQuery = async (query) => {
+    if (!user) {
+      toast({
+        title: "Please sign in",
+        description: "You need to be signed in to use AI features",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Only check rate limit for free tier users
+      if (!hasActiveSubscription) {
+        const { allowed, remainingMessages } = 
+          await rateLimitService.checkAndIncrementUsage(user.id);
+
+        if (!allowed) {
+          toast({
+            title: "Daily messages limit reached",
+            description: "You're out of free messages. Upgrade to more access",
+            variant: "destructive",
+            action: (
+              <ToastAction
+                altText="Upgrade to Pro"
+                onClick={() => router.push("/pricing")}
+              >
+                Upgrade to Pro
+              </ToastAction>
+            ),
+          });
+          return;
+        }
+
+        if (remainingMessages <= 2) {
+          toast({
+            title: "Message limit reminder",
+            description: `You have ${remainingMessages} messages remaining today`,
+            variant: "default",
+          });
+        }
+      }
+
+      setInput(query);
+      setSuggestedQuery(query);
+
+    } catch (error) {
+      console.error("Error checking rate limit:", error);
+      toast({
+        title: "Failed to send message",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
+  };
   const createNewChat = async () => {
     if (user) {
       const chatId = await chatService.createChat(user.id);
@@ -277,49 +379,123 @@ export function Chat({ editorContent }) {
     setShowChatHistory(false);
   };
 
-const handleFormSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const { allowed, remainingMessages } = await rateLimitService.checkAndIncrementUsage(user.id);
-    
-    if (!allowed) {
+  // const handleFormSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (!user) {
+  //     toast({
+  //       title: "Please sign in",
+  //       description: "You need to be signed in to use AI features",
+  //       variant: "destructive",
+  //     });
+  //     return;
+  //   }
+
+  //   try {
+  //     const { allowed, remainingMessages } =
+  //       await rateLimitService.checkAndIncrementUsage(user.id);
+
+  //     if (!allowed) {
+  //       toast({
+  //         title: "Daily messages limit reached",
+  //         description: "You're out of free messages. Upgrade to more access",
+  //         variant: "destructive",
+  //         action: (
+  //           <ToastAction
+  //             altText="Upgrade to Pro"
+  //             onClick={() => router.push("/pricing")}
+  //           >
+  //             Upgrade to Pro
+  //           </ToastAction>
+  //         ),
+  //       });
+  //       return;
+  //     }
+
+  //     if (!currentChatId) {
+  //       const chatId = await chatService.createChat(user.id);
+  //       setCurrentChatId(chatId);
+  //     }
+
+  //     // Ensure we're using the original handleSubmit from useChat
+  //     await originalHandleSubmit(e);
+
+  //     if (remainingMessages <= 2) {
+  //       toast({
+  //         title: "Message limit reminder",
+  //         description: `You have ${remainingMessages} messages remaining today`,
+  //         variant: "default",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error submitting form:", error);
+  //     toast({
+  //       title: "Failed to send message",
+  //       description: "Please try again",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!user) {
       toast({
-        title: "Daily messages limit reached",
-        description: "You're out of free messages. Upgrade to more access",
+        title: "Please sign in",
+        description: "You need to be signed in to use AI features",
         variant: "destructive",
-        action: (
-          <ToastAction altText="Upgrade to Pro" onClick={() => router.push('/pricing')}>
-            Upgrade to Pro
-          </ToastAction>
-        ),
       });
       return;
     }
 
-    if (!currentChatId) {
-      const chatId = await chatService.createChat(user.id, input);
-      setCurrentChatId(chatId);
-    }
+    try {
+      if (!hasActiveSubscription) {
+        const { allowed, remainingMessages } = 
+          await rateLimitService.checkAndIncrementUsage(user.id);
 
-    await handleSubmit(e);
+        if (!allowed) {
+          toast({
+            title: "Daily messages limit reached",
+            description: "You're out of free messages. Upgrade to more access",
+            variant: "destructive",
+            action: (
+              <ToastAction
+                altText="Upgrade to Pro"
+                onClick={() => router.push("/pricing")}
+              >
+                Upgrade to Pro
+              </ToastAction>
+            ),
+          });
+          return;
+        }
 
-    if (remainingMessages <= 2) {
+        if (remainingMessages <= 2) {
+          toast({
+            title: "Message limit reminder",
+            description: `You have ${remainingMessages} messages remaining today`,
+            variant: "default",
+          });
+        }
+      }
+
+      if (!currentChatId) {
+        const chatId = await chatService.createChat(user.id);
+        setCurrentChatId(chatId);
+      }
+
+      await originalHandleSubmit(e);
+
+    } catch (error) {
+      console.error("Error submitting form:", error);
       toast({
-        title: "Message limit reminder",
-        description: `You have ${remainingMessages} messages remaining today`,
-        variant: "default",
+        title: "Failed to send message",
+        description: "Please try again",
+        variant: "destructive",
       });
     }
-  } catch (error) {
-    console.error("Error submitting form:", error);
-    toast({
-      title: "Failed to send message",
-      description: "Please try again",
-      variant: "destructive",
-    });
-  }
-};
-
+  };
   const filteredChats = chats.filter((chat) =>
     chat.title.toLowerCase().includes(searchQuery.toLowerCase())
   );

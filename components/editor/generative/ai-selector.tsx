@@ -1,6 +1,11 @@
 "use client";
 
-import { Command, CommandInput, CommandItem, CommandList } from "@/components/editor/ui/command";
+import {
+  Command,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/editor/ui/command";
 import { useCompletion } from "ai/react";
 import { ArrowLeft, ArrowUp, Loader2Icon, SparkleIcon } from "lucide-react";
 import { useEditor } from "novel";
@@ -13,6 +18,12 @@ import { ScrollArea } from "../ui/scroll-area";
 import AICompletionCommands from "./ai-completion-command";
 import AISelectorCommands from "./ai-selector-commands";
 import { languages, proses } from "./prompts";
+import { rateLimitService } from "@/lib/rate-limit";
+import { useUser } from "@clerk/nextjs";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { useRouter } from "next/navigation";
+import UseSubscription from "@/hooks/use-subscription";
 
 interface AISelectorProps {
   open: boolean;
@@ -27,22 +38,113 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
   const [currentView, setCurrentView] = useState<ViewState>("main");
   const [selectedOption, setSelectedOption] = useState("");
 
+  const { user } = useUser();
+  const { toast } = useToast();
+  const router = useRouter();
+  const { hasActiveSubscription } = UseSubscription();
+
   const { completion, complete, isLoading } = useCompletion({
     api: "/api/generate",
-    onResponse: (response) => {
+    onResponse: async (response) => {
       if (response.status === 429) {
-        toast.error("You have reached your request limit for the day.");
         return;
       }
     },
-    onError: (e) => {
-      toast.error(e.message);
-    },
+    onError: (e) => {},
   });
 
   const hasCompletion = completion.length > 0;
 
-  const handleOptionSelect = (value: string, option: string) => {
+  // const checkRateLimitAndComplete = async (text: string, options: any) => {
+  //   if (!user) {
+  //     return;
+  //   }
+
+  //   try {
+  //     const { allowed, remainingMessages } =
+  //       await rateLimitService.checkAndIncrementUsage(user.id);
+
+  //     if (!allowed) {
+  //       toast({
+  //         title: "Daily messages limit reached",
+  //         description: "You're out of free messages. Upgrade to more access",
+  //         variant: "destructive",
+  //         action: (
+  //           <Button
+  //             variant="link"
+  //             onClick={() => router.push("/pricing")}
+  //           >
+  //             Upgrade to Pro
+  //           </Button>
+  //         ),
+  //       });
+  //       return;
+  //     }
+
+  //     await complete(text, options);
+
+  //     if (remainingMessages <= 2) {
+  //       toast({
+  //         title: "Message limit reminder",
+  //         description: `You have ${remainingMessages} messages remaining today`,
+  //         variant: "default",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error checking rate limit:", error);
+  //     toast({
+  //       title: "error",
+  //     });
+  //   }
+  // };
+
+  const checkRateLimitAndComplete = async (text: string, options: any) => {
+    if (!user) {
+      return;
+    }
+
+    try {
+      if (!hasActiveSubscription) {
+        const { allowed, remainingMessages } = 
+          await rateLimitService.checkAndIncrementUsage(user.id);
+
+        if (!allowed) {
+          toast({
+            title: "Daily messages limit reached",
+            description: "You're out of free messages. Upgrade to more access",
+            variant: "destructive",
+            action: (
+              <Button
+                variant="ghost"
+                onClick={() => router.push("/pricing")}
+              >
+                Upgrade to Pro
+              </Button>
+            ),
+          });
+          return;
+        }
+
+        if (remainingMessages <= 2) {
+          toast({
+            title: "Message limit reminder",
+            description: `You have ${remainingMessages} messages remaining today`,
+            variant: "default",
+          });
+        }
+      }
+
+      await complete(text, options);
+
+    } catch (error) {
+      console.error("Error checking rate limit:", error);
+      toast({
+        title: "error",
+      });
+    }
+  };
+  
+  const handleOptionSelect = async (value: string, option: string) => {
     if (option === "translate") {
       setSelectedOption("translate");
       setCurrentView("languages");
@@ -50,24 +152,24 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
       setSelectedOption("prose");
       setCurrentView("prose");
     } else {
-      complete(value, { body: { option } });
+      await checkRateLimitAndComplete(value, { body: { option } });
     }
   };
 
-  const handleSubOptionSelect = (value: string, subOption: string) => {
+  const handleSubOptionSelect = async (value: string, subOption: string) => {
     if (selectedOption === "translate") {
-      complete(value, { 
-        body: { 
-          option: "zap", 
-          command: `Translate this text to ${subOption}` 
-        } 
+      await checkRateLimitAndComplete(value, {
+        body: {
+          option: "zap",
+          command: `Translate this text to ${subOption}`,
+        },
       });
     } else if (selectedOption === "prose") {
-      complete(value, { 
-        body: { 
-          option: "zap", 
-          command: `Rewrite this text in a ${subOption.toLowerCase()} tone` 
-        } 
+      await checkRateLimitAndComplete(value, {
+        body: {
+          option: "zap",
+          command: `Rewrite this text in a ${subOption.toLowerCase()} tone`,
+        },
       });
     }
     setCurrentView("main");
@@ -94,7 +196,7 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
           </div>
         </div>
       )}
-      
+
       {!isLoading && (
         <>
           {currentView === "main" && (
@@ -117,20 +219,22 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
                 <Button
                   size="icon"
                   className="absolute right-2 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-purple-500 hover:bg-purple-900"
-                  onClick={() => {
+                  onClick={async () => {
                     if (!editor) return;
 
-                    if (completion)
-                      return complete(completion, {
+                    if (completion) {
+                      await checkRateLimitAndComplete(completion, {
                         body: { option: "zap", command: inputValue },
                       }).then(() => setInputValue(""));
+                      return;
+                    }
 
                     const slice = editor.state.selection.content();
                     const text = editor.storage.markdown.serializer.serialize(
                       slice.content
                     );
 
-                    complete(text, {
+                    await checkRateLimitAndComplete(text, {
                       body: { option: "zap", command: inputValue },
                     }).then(() => setInputValue(""));
                   }}
@@ -148,9 +252,7 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
                   completion={completion}
                 />
               ) : (
-                <AISelectorCommands
-                  onSelect={handleOptionSelect}
-                />
+                <AISelectorCommands onSelect={handleOptionSelect} />
               )}
             </>
           )}
@@ -167,26 +269,31 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <h2 className="text-sm font-medium ml-2">
-                  {currentView === "languages" ? "Select Language" : "Select Style"}
+                  {currentView === "languages"
+                    ? "Select Language"
+                    : "Select Style"}
                 </h2>
               </div>
               <CommandList>
-                {(currentView === "languages" ? languages : proses).map((item) => (
-                  <CommandItem
-                    key={item}
-                    value={item}
-                    onSelect={(value) => {
-                      if (!editor) return;
-                      const slice = editor.state.selection.content();
-                      const text = editor.storage.markdown.serializer.serialize(
-                        slice.content
-                      );
-                      handleSubOptionSelect(text, value);
-                    }}
-                  >
-                    {item}
-                  </CommandItem>
-                ))}
+                {(currentView === "languages" ? languages : proses).map(
+                  (item) => (
+                    <CommandItem
+                      key={item}
+                      value={item}
+                      onSelect={(value) => {
+                        if (!editor) return;
+                        const slice = editor.state.selection.content();
+                        const text =
+                          editor.storage.markdown.serializer.serialize(
+                            slice.content
+                          );
+                        handleSubOptionSelect(text, value);
+                      }}
+                    >
+                      {item}
+                    </CommandItem>
+                  )
+                )}
               </CommandList>
             </>
           )}

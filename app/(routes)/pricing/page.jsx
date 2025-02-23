@@ -122,19 +122,11 @@ export default function Pricing() {
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-primary" />
-                <span className="text-sm">
-          Invite 5 collaborators
-                </span>
+                <span className="text-sm">Invite 2 collaborators</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-primary" />
-                <span className="text-sm">
-                  Limited AI access
-                </span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-primary" />
-                <span className="text-sm">7 day page history</span>
+                <span className="text-sm">Limited AI access</span>
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-primary" />
@@ -181,11 +173,13 @@ export default function Pricing() {
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-primary" />
-                  <span className="text-sm">30 day page history</span>
+                  <span className="text-sm">Document History</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-primary" />
-                  <span className="text-sm">Export options (PDF, Word, CSV)</span>
+                  <span className="text-sm">
+                    Export options (PDF, Word, CSV)
+                  </span>
                 </li>
               </ul>
             </div>
