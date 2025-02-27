@@ -29,6 +29,8 @@ import FontFamily from "@tiptap/extension-font-family";
 import { Image } from "@tiptap/extension-image";
 import { cx } from "class-variance-authority";
 import { common, createLowlight } from "lowlight";
+import Export from "@tiptap-pro/extension-export";
+import Import from "@tiptap-pro/extension-import";
 
 const aiHighlight = AIHighlight;
 const placeholder = Placeholder;
@@ -39,6 +41,17 @@ const tiptapLink = TiptapLink.configure({
     ),
   },
 });
+
+const exportExtension = Export.configure({
+  appId: 'pkr44odm',
+  token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NDAzMjExNjcsIm5iZiI6MTc0MDMyMTE2NywiZXhwIjoxNzQwNDA3NTY3LCJpc3MiOiJodHRwczovL2Nsb3VkLnRpcHRhcC5kZXYiLCJhdWQiOiJqa3Z2d2dsayJ9.wXHAHbejX_fYXU-R6Y0OlRCDflaYdtpxbesL06IeWvI'
+})
+
+const importExtension = Import.configure({
+  appId: 'pkr44odm',
+  token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NDAzMjExNjcsIm5iZiI6MTc0MDMyMTE2NywiZXhwIjoxNzQwNDA3NTY3LCJpc3MiOiJodHRwczovL2Nsb3VkLnRpcHRhcC5kZXYiLCJhdWQiOiJqa3Z2d2dsayJ9.wXHAHbejX_fYXU-R6Y0OlRCDflaYdtpxbesL06IeWvI',
+  experimentalDocxImport: true,
+})
 
 const heading = Heading.configure({
   levels: [1,2,3],
@@ -192,6 +205,8 @@ export const defaultExtensions = [
   tableCell,
   tableHeader,
   heading,
+  exportExtension,
+  importExtension,
   Image.configure({
     inline: true,
     allowBase64: true,

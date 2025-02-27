@@ -9,8 +9,7 @@ import { useHistoryVersions } from "@liveblocks/react";
 import { HistoryVersionPreview } from "@liveblocks/react-tiptap";
 import { Clock, Loader2Icon } from "lucide-react";
 
-export default function VersionHistory({ editor }: { editor: Editor | null }) {
-  const [isOpen, setOpen] = useState(false);
+export default function VersionHistory({ editor, isOpen, setOpen }) {
 
   const onVersionRestore = useCallback(() => {
     setOpen(false);
@@ -18,9 +17,9 @@ export default function VersionHistory({ editor }: { editor: Editor | null }) {
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={setOpen}>
-      <Dialog.Trigger className="inline-flex relative items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground w-8 h-8">
+      {/* <Dialog.Trigger className="inline-flex relative items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground w-8 h-8">
         <Clock className="text-gray-700 size-5"/>
-      </Dialog.Trigger>
+      </Dialog.Trigger> */}
 
       <Dialog.Portal>
         <Dialog.Overlay className="bg-black/50 fixed inset-0 cursor-pointer" />

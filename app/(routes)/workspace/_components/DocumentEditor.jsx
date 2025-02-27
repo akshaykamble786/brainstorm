@@ -19,8 +19,18 @@ const DocumentEditor = ({ params }) => {
 
   return (
     <div className="relative">
-      <DocumentHeader />
-      <DocumentInfo params={params} charsCount={charsCount} editor={editorRef.current} isEditorReady={isEditorReady}/>
+      <DocumentHeader
+        charsCount={charsCount}
+        editorContent={{
+          text: documentContent.text,
+          editor: editorRef.current,
+        }}
+      />
+      <DocumentInfo
+        params={params}
+        editor={editorRef.current}
+        isEditorReady={isEditorReady}
+      />
       <div className="grid grid-cols-4">
         <div className="col-span-3">
           <ClientSideSuspense

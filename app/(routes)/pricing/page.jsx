@@ -130,7 +130,7 @@ export default function Pricing() {
               </li>
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-primary" />
-                <span className="text-sm">Export options (Markdowm, HTML)</span>
+                <span className="text-sm">Export options (Markdown)</span>
               </li>
             </ul>
           </CardContent>
@@ -173,12 +173,16 @@ export default function Pricing() {
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-primary" />
+                  <span className="text-sm">Premium Templates</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-primary" />
                   <span className="text-sm">Document History</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-primary" />
                   <span className="text-sm">
-                    Export options (PDF, Word, CSV)
+                    Export options (ODT, Word, GFM)
                   </span>
                 </li>
               </ul>

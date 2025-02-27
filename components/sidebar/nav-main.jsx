@@ -1,4 +1,3 @@
-// nav-main.jsx
 "use client";
 
 import {
@@ -8,18 +7,40 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link";
 import { useOrganization, useClerk } from "@clerk/nextjs";
+import UseSubscription from "@/hooks/use-subscription";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "../ui/toast";
+import { useRouter } from "next/navigation";
 
 export function NavMain({ items }) {
   const { organization } = useOrganization();
   const { openOrganizationProfile } = useClerk();
+  const { hasActiveSubscription } = UseSubscription();
+  const { toast } = useToast();
+  const router = useRouter();
 
   const handleInviteMembers = () => {
-    if (organization) {
-      openOrganizationProfile({
-        organization: organization,
-        tab: "members"
-      });
+    if (!organization) return;
+    
+    const memberCount = organization.membersCount || 0;
+    if (!hasActiveSubscription && memberCount >= 2) {
+      toast({
+        title: "Member limit reached",
+        description: "Upgrade to Pro to invite more members.",
+        variant: "destructive",
+        action : (
+          <ToastAction altText="Upgrade to Pro" onClick={() => router.push('/pricing')}>
+          Upgrade to Pro
+        </ToastAction>
+        )
+      })
+      return;
     }
+
+    openOrganizationProfile({
+      organization: organization,
+      tab: "members"
+    });
   };
 
   return (

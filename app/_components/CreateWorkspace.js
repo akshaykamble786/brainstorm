@@ -26,39 +26,39 @@ const CreateWorkspace = () => {
   const { orgId } = useAuth();
   const router = useRouter();
 
-  const checkWorkspaceCount = async () => {
-    const workspacesRef = collection(db, 'workspaces');
-    const userIdentifier = orgId ? orgId : user?.primaryEmailAddress?.emailAddress;
+  // const checkWorkspaceCount = async () => {
+  //   const workspacesRef = collection(db, 'workspaces');
+  //   const userIdentifier = orgId ? orgId : user?.primaryEmailAddress?.emailAddress;
     
-    const q = query(
-      workspacesRef, 
-      where('orgId', '==', userIdentifier)
-    );
+  //   const q = query(
+  //     workspacesRef, 
+  //     where('orgId', '==', userIdentifier)
+  //   );
 
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.size;
-  };
+  //   const querySnapshot = await getDocs(q);
+  //   return querySnapshot.size;
+  // };
 
   const OnCreateWorkspace = async () => {
     try {
       setLoading(true);
       
-      const workspaceCount = await checkWorkspaceCount();
+      // const workspaceCount = await checkWorkspaceCount();
       
-      if (workspaceCount >= process.env.NEXT_PUBLIC_MAX_WORKSPACE_COUNT) {
-        toast({
-          title: "Workspace Limit Reached",
-          description: "You've reached the maximum number of workspaces for the free plan.",
-          variant: "default",
-          action: (
-            <ToastAction altText="Upgrade to Pro" onClick={() => router.push('/pricing')}>
-              Upgrade to Pro
-            </ToastAction>
-          ),
-        });
-        setLoading(false);
-        return;
-      }
+      // if (workspaceCount >= process.env.NEXT_PUBLIC_MAX_WORKSPACE_COUNT) {
+      //   toast({
+      //     title: "Workspace Limit Reached",
+      //     description: "You've reached the maximum number of workspaces for the free plan.",
+      //     variant: "default",
+      //     action: (
+      //       <ToastAction altText="Upgrade to Pro" onClick={() => router.push('/pricing')}>
+      //         Upgrade to Pro
+      //       </ToastAction>
+      //     ),
+      //   });
+      //   setLoading(false);
+      //   return;
+      // }
 
       const workspaceId = Date.now();
       await setDoc(doc(db, 'workspaces', workspaceId.toString()), {
@@ -83,11 +83,6 @@ const CreateWorkspace = () => {
         id: docId,
         documentName: "Untitled Document",
       });
-
-      // await setDoc(doc(db, 'documentOutput', docId.toString()), {
-      //   docId: docId,
-      //   output: []
-      // });
 
       router.replace("/workspace/" + workspaceId + "/" + docId);
     } catch (error) {

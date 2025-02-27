@@ -38,16 +38,19 @@ export const Editor = ({ setCharsCount , onContentChange, onEditorReady}) => {
 
   const extensions = [...defaultExtensions, slashCommand, liveblocks];
 
-  const handleUpdate = useCallback(({ editor }) => {
-    const textContent = editor.getText();
-    const htmlContent = editor.getHTML();
-    setCharsCount(editor.storage.characterCount.words());
-    onContentChange({ html: htmlContent, text: textContent });
-    
-    if (onEditorReady && editor) {
-      onEditorReady(editor);
-    }
-  }, [setCharsCount, onContentChange, onEditorReady]);
+  const handleUpdate = useCallback(
+    ({ editor }) => {
+      const textContent = editor.getText();
+      const htmlContent = editor.getHTML();
+      setCharsCount(editor.storage.characterCount.words());
+      onContentChange({ html: htmlContent, text: textContent });
+
+      if (onEditorReady && editor) {
+        onEditorReady(editor);
+      }
+    },
+    [setCharsCount, onContentChange, onEditorReady]
+  );
 
   return (
     <div className="relative w-full max-w-screen-lg">
@@ -110,7 +113,7 @@ export const Editor = ({ setCharsCount , onContentChange, onEditorReady}) => {
             <Separator orientation="vertical" />
             <LinkSelector open={openLink} onOpenChange={setOpenLink} />
             <Separator orientation="vertical" />
-            <FontSelector open={openLink} onOpenChange={setOpenLink}/>
+            <FontSelector open={openLink} onOpenChange={setOpenLink} />
             <Separator orientation="vertical" />
             <MathSelector />
             <Separator orientation="vertical" />

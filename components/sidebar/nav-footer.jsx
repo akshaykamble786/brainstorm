@@ -25,10 +25,12 @@ import {
 } from "@/components/ui/sidebar"
 import { useClerk, UserButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import UseSubscription from "@/hooks/use-subscription";
 
 export default function Navfooter() {
     const { user } = useUser();
-    const { signOut } = useClerk()
+    const { signOut } = useClerk();
+    const { hasActiveSubscription } = UseSubscription();
     const router = useRouter();
     const clerk = useClerk();
 
@@ -43,7 +45,7 @@ export default function Navfooter() {
                         >
                             <UserButton />
                             <div className="flex-col gap-4">
-                                <h2 className="text-sm dark:opacity-50">Free Plan</h2>
+                                <h2 className="text-sm dark:opacity-50">{ hasActiveSubscription ? "Pro Plan" : "Free Plan" }</h2>
                                 <h2 className="text-xs">{user?.fullName}</h2>
                             </div>
                             <ChevronsUpDown className="ml-auto size-4" />
@@ -59,7 +61,7 @@ export default function Navfooter() {
                             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                                 <UserButton />
                                 <div className="flex-col gap-4">
-                                    <h2 className="text-sm dark:opacity-50">Free Plan</h2>
+                                    <h2 className="text-sm dark:opacity-50">{ hasActiveSubscription ? "Pro Plan" : "Free Plan" }</h2>
                                     <h2 className="text-xs">{user?.fullName}</h2>
                                 </div>
                             </div>

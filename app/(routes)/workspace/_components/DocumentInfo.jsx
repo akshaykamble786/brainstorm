@@ -8,10 +8,8 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { Clock, SmilePlusIcon } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { ThemeToggle } from "../../dashboard/_components/ThemeToggle";
-import VersionHistory from "@/components/editor/version-history";
 
-const DocumentInfo = ({ params, charsCount, editor, isEditorReady }) => {
+const DocumentInfo = ({ params }) => {
   const [coverImage, setCoverImage] = useState("/cover.png");
   const [emoji, setEmoji] = useState();
   const [documentInfo, setDocumentInfo] = useState();
@@ -101,16 +99,6 @@ const DocumentInfo = ({ params, charsCount, editor, isEditorReady }) => {
               updateDocumentInfo("documentName", event.target.value)
             }
           />
-        </div>
-        {/* Character Count, Version History and Mode Toggle */}
-        <div className="flex items-center gap-3">
-          {charsCount > 0 && (
-            <div className="rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground">
-              {charsCount} Words
-            </div>
-          )}
-          {isEditorReady && editor && <VersionHistory editor={editor} />}
-          <ThemeToggle />
         </div>
       </div>
     </div>

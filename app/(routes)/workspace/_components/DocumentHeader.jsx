@@ -1,18 +1,16 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import React from "react";
+import React, { useState } from "react";
 import DynamicBreadcrumb from "./CustomBreadcrumb";
 import { Bell } from "lucide-react";
 import NotificationSystem from "./NotificationSystem";
 import { useSyncStatus } from "@liveblocks/react/suspense";
 import { MessageSquareText, X } from "lucide-react";
 import { Comments } from "./CommentSection";
-// import { ClientSideSuspense } from "@liveblocks/react/suspense";
-// import { Loader2Icon } from "lucide-react";
-// import { Avataars } from "@/components/Avataars";
+import DocumentActions from "./DocumentActions";
 
-const DocumentHeader = ({ workspaceName }) => {
+const DocumentHeader = ({ workspaceName, charsCount, editorContent }) => {
   const syncStatus = useSyncStatus({ smooth: true });
 
   return (
@@ -23,10 +21,6 @@ const DocumentHeader = ({ workspaceName }) => {
       </div>
 
       <div className="flex items-center space-x-5">
-        {/* <ClientSideSuspense fallback={<Loader2Icon />}>
-          <Avataars />
-        </ClientSideSuspense> */}
-
         <NotificationSystem>
           <Bell className="size-5 cursor-pointer" />
         </NotificationSystem>
@@ -44,6 +38,11 @@ const DocumentHeader = ({ workspaceName }) => {
             Saved
           </Badge>
         )}
+
+        <DocumentActions
+          charsCount={charsCount}
+          editorContent={editorContent}
+        />
       </div>
     </div>
   );

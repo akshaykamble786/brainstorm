@@ -24,7 +24,7 @@ import {
 import DocumentOptions from "../../app/(routes)/workspace/_components/DocumentOptions"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
-import { ToastAction } from "../ui/toast"
+// import { ToastAction } from "../ui/toast"
 
 export function NavWorkspaces({ params }) {
   const [workspaces, setWorkspaces] = useState([])
@@ -80,21 +80,20 @@ export function NavWorkspaces({ params }) {
   }, [user, params])
 
   const createNewDocument = async (workspaceId) => {
-    const workspace = workspaces.find(w => w.id === workspaceId)
-    if (workspace?.documents?.length >= process.env.NEXT_PUBLIC_MAX_FILE_COUNT) {
-      toast({
-        title: "Document Limit Reached",
-        description: "You've reached the maximum number of documents for the free plan.",
-        variant: "default",
-        action: (
-          <ToastAction altText="Upgrade to Pro" onClick={() => router.push('/pricing')}>
-            Upgrade to Pro
-          </ToastAction>
-        ),
-      });
-
-      return
-    }
+    // const workspace = workspaces.find(w => w.id === workspaceId)
+    // if (workspace?.documents?.length >= process.env.NEXT_PUBLIC_MAX_FILE_COUNT) {
+    //   toast({
+    //     title: "Document Limit Reached",
+    //     description: "You've reached the maximum number of documents for the free plan.",
+    //     variant: "default",
+    //     action: (
+    //       <ToastAction altText="Upgrade to Pro" onClick={() => router.push('/pricing')}>
+    //         Upgrade to Pro
+    //       </ToastAction>
+    //     ),
+    //   });
+    //   return
+    // }
 
     setLoading(true)
     try {
@@ -108,11 +107,6 @@ export function NavWorkspaces({ params }) {
         id: docId,
         documentName: "Untitled Document",
       })
-
-      // await setDoc(doc(db, 'documentOutput', docId), {
-      //   docId,
-      //   output: []
-      // })
 
       router.push(`/workspace/${workspaceId}/${docId}`)
     } catch (error) {
@@ -129,7 +123,6 @@ export function NavWorkspaces({ params }) {
   const deleteDocument = async (documentId) => {
     try {
       await deleteDoc(doc(db, 'documents', documentId))
-      // await deleteDoc(doc(db, 'documentOutput', documentId))
 
       toast({
         title: "Success",
