@@ -68,10 +68,10 @@ export default function Navfooter() {
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem onClick={() => router.push('/pricing')}>
+                            {!hasActiveSubscription && <DropdownMenuItem onClick={() => router.push('/pricing')}>
                                 <Sparkles className="mr-1.5 size-4" />
                                 Upgrade to Pro
-                            </DropdownMenuItem>
+                            </DropdownMenuItem>}
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>

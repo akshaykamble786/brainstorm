@@ -8,7 +8,7 @@ import NotificationSystem from "./NotificationSystem";
 import { useSyncStatus } from "@liveblocks/react/suspense";
 import { MessageSquareText, X } from "lucide-react";
 import { Comments } from "./CommentSection";
-import DocumentActions from "./DocumentActions";
+import { DocumentActions } from "./DocumentActions";
 
 const DocumentHeader = ({ workspaceName, charsCount, editorContent }) => {
   const syncStatus = useSyncStatus({ smooth: true });

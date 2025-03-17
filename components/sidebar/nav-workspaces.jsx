@@ -1,8 +1,8 @@
 import { ChevronRight, Plus } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
-import { collection, deleteDoc, doc, onSnapshot, query, setDoc, where } from "firebase/firestore"
+import { collection, deleteDoc, doc, getDocs, onSnapshot, query, setDoc, where } from "firebase/firestore"
 import { db } from "@/config/FirebaseConfig"
 import {
   Collapsible,
@@ -24,7 +24,6 @@ import {
 import DocumentOptions from "../../app/(routes)/workspace/_components/DocumentOptions"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
-// import { ToastAction } from "../ui/toast"
 
 export function NavWorkspaces({ params }) {
   const [workspaces, setWorkspaces] = useState([])
@@ -32,69 +31,98 @@ export function NavWorkspaces({ params }) {
   const user = useUser()
   const router = useRouter()
   const { toast } = useToast()
+  const unsubscribesRef = useRef([]);
+
+  // Clean up function to unsubscribe from all listeners
+  const cleanupListeners = () => {
+    unsubscribesRef.current.forEach(unsubscribe => unsubscribe());
+    unsubscribesRef.current = [];
+  };
 
   useEffect(() => {
-    if (user?.user?.id) {
-      const workspacesQuery = query(
-        collection(db, 'workspaces'),
-        where('createdBy', '==', user.user.primaryEmailAddress.emailAddress)
-      )
+    if (!user?.user?.id) return;
 
-      const unsubscribeWorkspaces = onSnapshot(workspacesQuery, async (snapshot) => {
-        const workspacePromises = snapshot.docs.map(async (workspaceDoc) => {
-          const workspaceData = workspaceDoc.data()
+    // Clean up any existing listeners first
+    cleanupListeners();
 
-          const docsQuery = query(
-            collection(db, 'documents'),
-            where('workspaceId', '==', workspaceData.id)
-          )
-
-          const docsSnapshot = await new Promise((resolve) => {
-            onSnapshot(docsQuery, (docs) => {
-              resolve(docs)
-            })
-          })
-
-          const documents = docsSnapshot.docs.map(doc => ({
-            id: doc.id,
-            name: doc.data().documentName,
-            emoji: doc.data().emoji || "📄",
-            ...doc.data(),
-          }))
-
+    const fetchData = async () => {
+      try {
+        // Get workspaces once (not using real-time listener)
+        const workspacesQuery = query(
+          collection(db, 'workspaces'),
+          where('createdBy', '==', user.user.primaryEmailAddress.emailAddress)
+        );
+        
+        // Use getDocs instead of onSnapshot for the initial fetch
+        const workspacesSnapshot = await getDocs(workspacesQuery);
+        
+        const workspacesList = workspacesSnapshot.docs.map(workspaceDoc => {
+          const workspaceData = workspaceDoc.data();
           return {
             id: workspaceData.id,
             name: workspaceData.workspaceName,
             emoji: workspaceData.emoji || "📁",
             isActive: params?.workspaceId === workspaceData.id.toString(),
-            documents
-          }
-        })
-
-        const populatedWorkspaces = await Promise.all(workspacePromises)
-        setWorkspaces(populatedWorkspaces)
-      })
-
-      return () => unsubscribeWorkspaces()
-    }
-  }, [user, params])
+            documents: [] // Will be populated later
+          };
+        });
+        
+        // Set workspaces initially with empty documents arrays
+        setWorkspaces(workspacesList);
+        
+        // Now set up a single listener for all documents
+        const workspaceIds = workspacesList.map(w => w.id);
+        
+        if (workspaceIds.length > 0) {
+          // For small number of workspaces, 'in' operator works fine
+          // For larger numbers, we might need to batch this
+          const docsQuery = query(
+            collection(db, 'documents'),
+            where('workspaceId', 'in', workspaceIds)
+          );
+          
+          const unsubscribeDocs = onSnapshot(docsQuery, (docsSnapshot) => {
+            // Create a map of documents by workspace ID
+            const docsByWorkspace = {};
+            workspaceIds.forEach(id => {
+              docsByWorkspace[id] = [];
+            });
+            
+            docsSnapshot.docs.forEach(docSnap => {
+              const docData = docSnap.data();
+              if (docsByWorkspace[docData.workspaceId]) {
+                docsByWorkspace[docData.workspaceId].push({
+                  id: docData.id,
+                  name: docData.documentName,
+                  emoji: docData.emoji || "📄",
+                  ...docData
+                });
+              }
+            });
+            
+            // Update the workspaces with their documents
+            setWorkspaces(currentWorkspaces => 
+              currentWorkspaces.map(workspace => ({
+                ...workspace,
+                documents: docsByWorkspace[workspace.id] || []
+              }))
+            );
+          });
+          
+          unsubscribesRef.current.push(unsubscribeDocs);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    
+    fetchData();
+    
+    // Clean up on unmount or when dependencies change
+    return cleanupListeners;
+  }, [user?.user?.id, params?.workspaceId]);
 
   const createNewDocument = async (workspaceId) => {
-    // const workspace = workspaces.find(w => w.id === workspaceId)
-    // if (workspace?.documents?.length >= process.env.NEXT_PUBLIC_MAX_FILE_COUNT) {
-    //   toast({
-    //     title: "Document Limit Reached",
-    //     description: "You've reached the maximum number of documents for the free plan.",
-    //     variant: "default",
-    //     action: (
-    //       <ToastAction altText="Upgrade to Pro" onClick={() => router.push('/pricing')}>
-    //         Upgrade to Pro
-    //       </ToastAction>
-    //     ),
-    //   });
-    //   return
-    // }
-
     setLoading(true)
     try {
       const docId = crypto.randomUUID()

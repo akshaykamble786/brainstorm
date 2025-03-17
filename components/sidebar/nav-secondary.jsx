@@ -8,46 +8,11 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-// import {
-//   Popover,
-//   PopoverContent,
-//   PopoverTrigger,
-// } from "@/components/ui/popover";
-// import { Progress } from "@/components/ui/progress";
-// import { collection, onSnapshot, query, where } from "firebase/firestore";
-// import { db } from "@/config/FirebaseConfig";
-// import { Button } from "../ui/button";
-// import { useUser } from "@clerk/nextjs";
-// import { useRouter } from "next/navigation";
 import { Calendar } from "@/components/ui/calendar";
 
-
 export function NavSecondary({ items, ...props }) {
-  // const [workspaceCount, setWorkspaceCount] = useState(0);
   const [showCalendar, setShowCalendar] = useState(false);
   const [date, setDate] = useState(new Date())
-
-  // const { user } = useUser();
-
-  // useEffect(() => {
-  //   if (user?.primaryEmailAddress?.emailAddress) {
-  //     const getWorkspaceCount = () => {
-  //       const q = query(
-  //         collection(db, "workspaces"),
-  //         where("createdBy", "==", user.primaryEmailAddress.emailAddress)
-  //       );
-
-  //       const unsubscribe = onSnapshot(q, (querySnapshot) => {
-  //         setWorkspaceCount(querySnapshot.size);
-  //       });
-
-  //       return unsubscribe;
-  //     };
-
-  //     const unsubscribe = getWorkspaceCount();
-  //     return () => unsubscribe();
-  //   }
-  // }, [user]);
 
   const handleCalendarClick = () => {
     setShowCalendar(!showCalendar);

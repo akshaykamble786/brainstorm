@@ -4,8 +4,6 @@ import * as React from "react"
 import {
   Blocks,
   Search,
-  Settings2,
-  Sparkles,
   Trash2,
   Calendar,
   Users2Icon,
@@ -13,7 +11,6 @@ import {
 
 import { NavMain } from "./nav-main"
 import { NavSecondary } from "./nav-secondary"
-import { NavShared } from "./nav-shared"
 import { NavWorkspaces } from "./nav-workspaces"
 import {
   Sidebar,
@@ -50,23 +47,11 @@ const data = {
       icon: Calendar,
     },
     {
-      title: "Usage",
-      url: "#",
-      icon: Settings2,
-    },
-    {
       title: "Trash",
       url: "#",
       icon: Trash2,
     },
   ],
-  shared: [
-    {
-      name: "Birthday Planning",
-      url: "#",
-      emoji: "🎂",
-    },
-  ]
 }
 
 export function AppSidebar({ params
@@ -81,7 +66,6 @@ export function AppSidebar({ params
       <SidebarContent>
         <NavWorkspaces params={params}/>
         <NavFavorites />
-        <NavShared shared={data.shared} />
         <NavSecondary items={data.navSecondary} className="mt-auto" params={params} />
       </SidebarContent>
       <Navfooter />

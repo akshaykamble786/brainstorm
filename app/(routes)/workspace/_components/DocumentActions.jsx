@@ -10,10 +10,10 @@ import {
   Computer,
   Crown,
   File,
-  FileReader,
-  FileSpreadsheet,
   FileText,
   Github,
+  FileBadge,
+  FileAxis3D,
 } from "lucide-react";
 import React, { useCallback, useState, useRef } from "react";
 import {
@@ -39,14 +39,13 @@ import { Import } from "@tiptap-pro/extension-import";
 const extendedExtensions = [
   ...defaultExtensions,
   Import.configure({
-    // These values should be set from environment variables or config
     appId: process.env.NEXT_PUBLIC_TIPTAP_CONVERT_APP_ID || "",
     token: process.env.NEXT_PUBLIC_TIPTAP_CONVERT_JWT || '',
     experimentalDocxImport: true,
   }),
 ];
 
-const DocumentActions = ({ charsCount, editorContent }) => {
+export const DocumentActions = ({ charsCount, editorContent }) => {
   const params = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const { setTheme } = useTheme();
@@ -131,6 +130,7 @@ const DocumentActions = ({ charsCount, editorContent }) => {
         case 'docx':
           fileInputRef.current.accept = '.docx';
           break;
+          case 'pdf':
           fileInputRef.current.accept = '.pdf';
           break;
         case 'markdown':
@@ -266,7 +266,7 @@ const DocumentActions = ({ charsCount, editorContent }) => {
                 disabled={ isLoading || !hasActiveSubscription }
                 onClick={createExport("odt")}
               >
-                <FileSpreadsheet className="mr-2 h-4 w-4" />
+                <FileBadge className="mr-2 h-4 w-4" />
                 ODT
                 {!hasActiveSubscription && (
                   <Crown className="ml-2 h-4 w-4 text-yellow-500" />
@@ -314,7 +314,7 @@ const DocumentActions = ({ charsCount, editorContent }) => {
                 disabled={isLoading || !hasActiveSubscription}
                 onClick={() => handleImport('odt')}
               >
-                <FileSpreadsheet className="mr-2 h-4 w-4" />
+                <FileAxis3D className="mr-2 h-4 w-4" />
                 ODT
                 {!hasActiveSubscription && (
                   <Crown className="ml-2 h-4 w-4 text-yellow-500" />
@@ -324,7 +324,7 @@ const DocumentActions = ({ charsCount, editorContent }) => {
                 disabled={isLoading || !hasActiveSubscription}
                 onClick={() => handleImport('markdown')}
               >
-                <FileReader className="mr-2 h-4 w-4" />
+                <FileBadge className="mr-2 h-4 w-4" />
                 Markdown
                 {!hasActiveSubscription && (
                   <Crown className="ml-2 h-4 w-4 text-yellow-500" />
@@ -344,7 +344,7 @@ const DocumentActions = ({ charsCount, editorContent }) => {
           </DropdownMenuSub>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            disabled={editor.isEmpty || isLoading || !hasActiveSubscription}
+            disabled={isLoading || !hasActiveSubscription}
             onClick={handleHistoryClick}
           >
             <History className="mr-2 h-4 w-4" />
@@ -367,5 +367,3 @@ const DocumentActions = ({ charsCount, editorContent }) => {
     </>
   );
 };
-
-export default DocumentActions;

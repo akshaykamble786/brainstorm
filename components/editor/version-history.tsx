@@ -9,7 +9,7 @@ import { useHistoryVersions } from "@liveblocks/react";
 import { HistoryVersionPreview } from "@liveblocks/react-tiptap";
 import { Clock, Loader2Icon } from "lucide-react";
 
-export default function VersionHistory({ editor, isOpen, setOpen }) {
+function VersionHistory({ editor, isOpen, setOpen }) {
 
   const onVersionRestore = useCallback(() => {
     setOpen(false);
@@ -76,3 +76,5 @@ function Versions({ onVersionRestore, editor }: { onVersionRestore: () => void, 
     </div>
   );
 }
+
+export default VersionHistory;
