@@ -9,6 +9,7 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { Calendar } from "@/components/ui/calendar";
+import Trash from "@/app/(routes)/workspace/_components/Trash";
 
 export function NavSecondary({ items, ...props }) {
   const [showCalendar, setShowCalendar] = useState(false);
@@ -39,7 +40,14 @@ export function NavSecondary({ items, ...props }) {
                     />
                   )}
                 </>
-              ) : (
+              ) : item.title === "Trash" ? 
+              <Trash trigger={
+                <SidebarMenuButton isActive={item.isActive}>
+                  <item.icon />
+                  <span>{item.title}</span>
+                </SidebarMenuButton>
+              }/>
+               : (
                 <SidebarMenuButton asChild>
                   <Link href={item.url}>
                     <item.icon />

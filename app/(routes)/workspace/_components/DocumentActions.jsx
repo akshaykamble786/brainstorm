@@ -35,12 +35,13 @@ import UseSubscription from "@/hooks/use-subscription";
 import { useEditor } from "@tiptap/react";
 import { defaultExtensions } from "@/components/editor/extensions";
 import { Import } from "@tiptap-pro/extension-import";
+import { Badge } from "@/components/ui/badge";
 
 const extendedExtensions = [
   ...defaultExtensions,
   Import.configure({
     appId: process.env.NEXT_PUBLIC_TIPTAP_CONVERT_APP_ID || "",
-    token: process.env.NEXT_PUBLIC_TIPTAP_CONVERT_JWT || '',
+    token: process.env.NEXT_PUBLIC_TIPTAP_CONVERT_JWT || "",
     experimentalDocxImport: true,
   }),
 ];
@@ -124,28 +125,28 @@ export const DocumentActions = ({ charsCount, editorContent }) => {
 
   const handleImport = async (fileType) => {
     if (!editor || !hasActiveSubscription) return;
-    
+
     if (fileInputRef.current) {
       switch (fileType) {
-        case 'docx':
-          fileInputRef.current.accept = '.docx';
+        case "docx":
+          fileInputRef.current.accept = ".docx";
           break;
-          case 'pdf':
-          fileInputRef.current.accept = '.pdf';
+        case "pdf":
+          fileInputRef.current.accept = ".pdf";
           break;
-        case 'markdown':
-          fileInputRef.current.accept = '.md,.markdown';
+        case "markdown":
+          fileInputRef.current.accept = ".md,.markdown";
           break;
-        case 'odt':
-          fileInputRef.current.accept = '.odt';
+        case "odt":
+          fileInputRef.current.accept = ".odt";
           break;
-        case 'rtf':
-          fileInputRef.current.accept = '.rtf';
+        case "rtf":
+          fileInputRef.current.accept = ".rtf";
           break;
         default:
-          fileInputRef.current.accept = '.docx,.odt,.rtf,.md,.markdown';
+          fileInputRef.current.accept = ".docx,.odt,.rtf,.md,.markdown";
       }
-      
+
       fileInputRef.current.click();
     }
   };
@@ -156,35 +157,39 @@ export const DocumentActions = ({ charsCount, editorContent }) => {
 
     try {
       setIsLoading(true);
-      
-      await editor.chain().focus().import({
-        file,
-        onImport: (context) => {
-          const { setEditorContent, content, error } = context;
-          
-          if (error) {
-            console.error("Import error:", error);
+
+      await editor
+        .chain()
+        .focus()
+        .import({
+          file,
+          onImport: (context) => {
+            const { setEditorContent, content, error } = context;
+
+            if (error) {
+              console.error("Import error:", error);
+              setIsLoading(false);
+              return;
+            }
+
+            setEditorContent();
+
+            toast({
+              title: "Import successful",
+              description: `${file.name} has been imported successfully.`,
+              variant: "success",
+            });
+
             setIsLoading(false);
-            return;
-          }
-          
-          setEditorContent();
-          
-          toast({
-            title: "Import successful",
-            description: `${file.name} has been imported successfully.`,
-            variant: "success",
-          });
-          
-          setIsLoading(false);
-        },
-      }).run();
+          },
+        })
+        .run();
     } catch (error) {
       console.error("Import failed:", error);
       setIsLoading(false);
     }
-    
-    event.target.value = '';
+
+    event.target.value = "";
   };
 
   if (!editor) {
@@ -196,10 +201,10 @@ export const DocumentActions = ({ charsCount, editorContent }) => {
       <input
         type="file"
         ref={fileInputRef}
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
         onChange={handleFileSelected}
       />
-      
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -235,51 +240,51 @@ export const DocumentActions = ({ charsCount, editorContent }) => {
               Export
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              <DropdownMenuItem
-                disabled={ isLoading || !hasActiveSubscription }
-                onClick={createExport("docx")}
-              >
+              <DropdownMenuItem onClick={createExport("docx")}>
                 <FileText className="mr-2 h-4 w-4" />
                 Word
-                {!hasActiveSubscription && (
-                  <Crown className="ml-2 h-4 w-4 text-yellow-500" />
-                )}
               </DropdownMenuItem>
               <DropdownMenuItem
-                disabled={ isLoading || !hasActiveSubscription }
+                disabled={isLoading || !hasActiveSubscription}
                 onClick={createExport("pdf")}
               >
                 <FileText className="mr-2 h-4 w-4" />
                 PDF
                 {!hasActiveSubscription && (
-                  <Crown className="ml-2 h-4 w-4 text-yellow-500" />
+                  <Badge variant="default" className="ml-auto border-yellow-500">
+                    <Crown className="h-3 w-3 mr-1 text-yellow-500" />
+                    Pro
+                  </Badge>
                 )}
               </DropdownMenuItem>
-              <DropdownMenuItem
-                disabled={ isLoading || !hasActiveSubscription }
-                onClick={createExport("md")}
-              >
+              <DropdownMenuItem onClick={createExport("md")}>
                 <File className="mr-2 h-4 w-4" />
                 Markdown
               </DropdownMenuItem>
               <DropdownMenuItem
-                disabled={ isLoading || !hasActiveSubscription }
+                disabled={isLoading || !hasActiveSubscription}
                 onClick={createExport("odt")}
               >
                 <FileBadge className="mr-2 h-4 w-4" />
                 ODT
                 {!hasActiveSubscription && (
-                  <Crown className="ml-2 h-4 w-4 text-yellow-500" />
+                  <Badge variant="default" className="ml-auto border-yellow-500">
+                    <Crown className="h-3 w-3 mr-1  text-yellow-500" />
+                    Pro
+                  </Badge>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem
-                disabled={ isLoading || !hasActiveSubscription }
+                disabled={isLoading || !hasActiveSubscription}
                 onClick={createExport("gfm")}
               >
                 <Github className="mr-2 h-4 w-4" />
                 GitHub Markdown
                 {!hasActiveSubscription && (
-                  <Crown className="ml-2 h-4 w-4 text-yellow-500 text-right" />
+                  <Badge variant="default" className="ml-3 border-yellow-500">
+                    <Crown className="h-3 w-3 mr-1 text-yellow-500" />
+                    Pro
+                  </Badge>
                 )}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
@@ -290,54 +295,51 @@ export const DocumentActions = ({ charsCount, editorContent }) => {
               Import
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              <DropdownMenuItem 
-                disabled={isLoading || !hasActiveSubscription}
-                onClick={() => handleImport('docx')}
-              >
+              <DropdownMenuItem onClick={() => handleImport("docx")}>
                 <FileText className="mr-2 h-4 w-4" />
                 Word
-                {!hasActiveSubscription && (
-                  <Crown className="ml-2 h-4 w-4 text-yellow-500" />
-                )}
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 disabled={isLoading || !hasActiveSubscription}
-                onClick={() => handleImport('pdf')}
+                onClick={() => handleImport("pdf")}
               >
                 <File className="mr-2 h-4 w-4" />
                 PDF
                 {!hasActiveSubscription && (
-                  <Crown className="ml-2 h-4 w-4 text-yellow-500" />
+                  <Badge variant="default" className="ml-auto border-yellow-500">
+                    <Crown className="h-3 w-3 mr-1 text-yellow-500" />
+                    Pro
+                  </Badge>
                 )}
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 disabled={isLoading || !hasActiveSubscription}
-                onClick={() => handleImport('odt')}
+                onClick={() => handleImport("odt")}
               >
                 <FileAxis3D className="mr-2 h-4 w-4" />
                 ODT
                 {!hasActiveSubscription && (
-                  <Crown className="ml-2 h-4 w-4 text-yellow-500" />
+                  <Badge variant="default" className="ml-auto border-yellow-500">
+                    <Crown className="h-3 w-3 mr-1 text-yellow-500" />
+                    Pro
+                  </Badge>
                 )}
               </DropdownMenuItem>
-              <DropdownMenuItem 
-                disabled={isLoading || !hasActiveSubscription}
-                onClick={() => handleImport('markdown')}
-              >
+              <DropdownMenuItem onClick={() => handleImport("markdown")}>
                 <FileBadge className="mr-2 h-4 w-4" />
                 Markdown
-                {!hasActiveSubscription && (
-                  <Crown className="ml-2 h-4 w-4 text-yellow-500" />
-                )}
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 disabled={isLoading || !hasActiveSubscription}
-                onClick={() => handleImport('markdown')}
+                onClick={() => handleImport("markdown")}
               >
                 <Github className="mr-2 h-4 w-4" />
                 Github Markdown
                 {!hasActiveSubscription && (
-                  <Crown className="ml-2 h-4 w-4 text-yellow-500" />
+                  <Badge variant="default" className="ml-3 border-yellow-500">
+                    <Crown className="h-3 w-3 mr-1 text-yellow-500" />
+                    Pro
+                  </Badge>
                 )}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
@@ -350,7 +352,10 @@ export const DocumentActions = ({ charsCount, editorContent }) => {
             <History className="mr-2 h-4 w-4" />
             Document History
             {!hasActiveSubscription && (
-              <Crown className="ml-2 h-4 w-4 text-yellow-500" />
+              <Badge variant="default" className="ml-3 border-yellow-500">
+                <Crown className="h-3 w-3 mr-1 text-yellow-500" />
+                Pro
+              </Badge>
             )}
           </DropdownMenuItem>
           <DropdownMenuItem>

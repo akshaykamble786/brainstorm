@@ -2,7 +2,7 @@ import { ChevronRight, Plus } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
-import { collection, deleteDoc, doc, getDocs, onSnapshot, query, setDoc, where } from "firebase/firestore"
+import { collection, deleteDoc, doc, getDocs, getDoc, onSnapshot, query, setDoc, where } from "firebase/firestore"
 import { db } from "@/config/FirebaseConfig"
 import {
   Collapsible,
@@ -150,22 +150,38 @@ export function NavWorkspaces({ params }) {
 
   const deleteDocument = async (documentId) => {
     try {
-      await deleteDoc(doc(db, 'documents', documentId))
+      // Get the document data before deletion
+      const docRef = doc(db, 'documents', documentId);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const docData = docSnap.data();
+        
+        // Add to trash collection with deletion timestamp
+        await setDoc(doc(db, 'trash', documentId), {
+          ...docData,
+          deletedAt: new Date(),
+          originalWorkspaceId: docData.workspaceId
+        });
+        
+        // Delete from documents collection
+        await deleteDoc(docRef);
 
-      toast({
-        title: "Success",
-        description: "Document moved to trash"
-      })
+        toast({
+          title: "Success",
+          description: "Document moved to trash"
+        });
 
-      if (params?.documentId === documentId) {
-        router.push(`/workspace/${params.workspaceId}`)
+        if (params?.documentId === documentId) {
+          router.push(`/workspace/${params.workspaceId}`);
+        }
       }
     } catch (error) {
-      console.error("Error deleting document:", error)
+      console.error("Error moving document to trash:", error);
       toast({
         title: "Error",
-        description: "Failed to delete document"
-      })
+        description: "Failed to move document to trash"
+      });
     }
   }
 

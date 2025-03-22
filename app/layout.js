@@ -9,6 +9,14 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Brainstorm",
+  icons: {
+    icon: [
+      {
+        url: '/logo.svg',
+        type: 'image/svg+xml',
+      }
+    ]
+  }
 };
 
 export default function RootLayout({ children }) {

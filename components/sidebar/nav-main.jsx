@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast"
 import { ToastAction } from "../ui/toast"
 import { useRouter } from "next/navigation"
 import { TemplatesDialog } from "@/components/templates/template-dialog"
+import Search from "../../app/(routes)/workspace/_components/Search"
 
 export function NavMain({ items }) {
   const { organization } = useOrganization()
@@ -41,16 +42,12 @@ export function NavMain({ items }) {
   }
 
   const handleSelectTemplate = (templateId) => {
-    // Here you would handle the template selection
-    // For example, create a new document with the selected template
+
     toast({
       title: "Template selected",
       description: `Creating new document with ${templateId} template`,
       variant:"success"
     })
-
-    // Navigate to a new document with the template
-    // router.push(`/document/new?template=${templateId}`);
   }
 
   return (
@@ -73,14 +70,16 @@ export function NavMain({ items }) {
               }
               onSelectTemplate={handleSelectTemplate}
             />
-          ) : (
-            <SidebarMenuButton asChild isActive={item.isActive}>
-              <Link href={item.url}>
-                <item.icon />
-                <span>{item.title}</span>
-              </Link>
-            </SidebarMenuButton>
-          )}
+          ) :  item.title === "Search" ? (
+            <Search
+              trigger={
+                <SidebarMenuButton isActive={item.isActive}>
+                  <item.icon />
+                  <span>{item.title}</span>
+                </SidebarMenuButton>
+              }
+            />
+          ) : ""}
         </SidebarMenuItem>
       ))}
     </SidebarMenu>
