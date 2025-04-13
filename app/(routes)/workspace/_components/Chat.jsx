@@ -35,8 +35,10 @@ import { chatService } from "@/lib/chat-service";
 import { rateLimitService } from "@/lib/rate-limit";
 import { ToastAction } from "@/components/ui/toast";
 import UseSubscription from "@/hooks/use-subscription";
+import { useEditor } from "@/components/editor/editor-context";
+import { useRouter } from "next/navigation";
 
-export function Chat({ editorContent }) {
+export function Chat() {
   const [isOpen, setIsOpen] = useState(false);
   const [documentContext, setDocumentContext] = useState("");
   const [suggestedQuery, setSuggestedQuery] = useState(null);
@@ -44,6 +46,7 @@ export function Chat({ editorContent }) {
   const [currentChatId, setCurrentChatId] = useState(null);
   const [showChatHistory, setShowChatHistory] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const editorRef = useEditor();
 
   const scrollAreaRef = useRef(null);
   const lastMessageRef = useRef(null);
@@ -51,6 +54,7 @@ export function Chat({ editorContent }) {
   const { user } = useUser();
   const { toast } = useToast();
   const { hasActiveSubscription } = UseSubscription();
+  const router = useRouter();
 
   const {
     messages,
@@ -98,11 +102,32 @@ export function Chat({ editorContent }) {
       }
     },
   });
+
   useEffect(() => {
-    if (editorContent?.text) {
-      setDocumentContext(editorContent.text);
+    if (editorRef.current) {
+      const updateContext = () => {
+        const content = editorRef.current.getText();
+        setDocumentContext(content);
+      };
+
+      updateContext();
+
+      editorRef.current.on('transaction', updateContext);
+      
+      return () => {
+        if (editorRef.current) {
+          editorRef.current.off('transaction', updateContext);
+        }
+      };
     }
-  }, [editorContent]);
+  }, [editorRef.current]);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      const content = editorRef.current.getText();
+      setDocumentContext(content);
+    }
+  }, [editorRef.current?.getText()]);
 
   useEffect(() => {
     if (suggestedQuery) {
@@ -215,7 +240,7 @@ export function Chat({ editorContent }) {
   };
 
   const insertResponse = (content) => {
-    if (!editorContent?.editor) {
+    if (!editorRef.current) {
       toast({
         title: "Editor not found",
         variant: "destructive",
@@ -224,10 +249,9 @@ export function Chat({ editorContent }) {
     }
 
     try {
-      const editor = editorContent.editor;
-      editor.commands.clearContent();
-      editor.commands.setContent(content);
-      editor.commands.focus();
+      editorRef.current.commands.clearContent();
+      editorRef.current.commands.setContent(content);
+      editorRef.current.commands.focus();
 
       toast({
         title: "Response inserted",
@@ -360,21 +384,13 @@ export function Chat({ editorContent }) {
           });
           return;
         }
-
-        // if (remainingMessages <= 2) {
-        //   toast({
-        //     title: "Message limit reminder",
-        //     description: `You have ${remainingMessages} messages remaining today`,
-        //     variant: "default",
-        //   });
-        // }
       }
 
       if (!currentChatId) {
         const chatId = await chatService.createChat(user.id);
         setCurrentChatId(chatId);
       }
-``
+
       await handleSubmit(e);
 
     } catch (error) {
@@ -399,9 +415,9 @@ export function Chat({ editorContent }) {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[430px] p-0" align="end">
-          <div className="flex h-[450px]">
+          <div className="flex h-[450px] flex-col">
             {showChatHistory ? (
-              <div className="w-full p-2">
+              <div className="w-full p-2 flex flex-col h-full">
                 <div className="flex items-center justify-between mb-4">
                   <Button
                     variant="ghost"
@@ -424,8 +440,8 @@ export function Chat({ editorContent }) {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <ScrollArea className="h-[440px]">
-                  <div className="space-y-2">
+                <ScrollArea className="flex-1 overflow-hidden">
+                  <div className="space-y-2 pr-2">
                     {filteredChats.map((chat) => (
                       <div
                         key={chat.id}
@@ -449,7 +465,7 @@ export function Chat({ editorContent }) {
                 </ScrollArea>
               </div>
             ) : (
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full h-full">
                 <div className="flex justify-end">
                   <Button variant="ghost" onClick={createNewChat}>
                     <Plus className="size-4" />
@@ -578,10 +594,6 @@ export function Chat({ editorContent }) {
                             >
                               <Edit size={16} />
                               Replace
-                            </Button>
-                            <Button variant="ghost" size="sm">
-                              <BoxSelect size={16} />
-                              Create document
                             </Button>
                           </div>
                         )}

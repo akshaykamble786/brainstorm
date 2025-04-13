@@ -1,7 +1,6 @@
 "use client"
 
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
-import Link from "next/link"
 import { useOrganization, useClerk } from "@clerk/nextjs"
 import UseSubscription from "@/hooks/use-subscription"
 import { useToast } from "@/hooks/use-toast"
@@ -10,7 +9,7 @@ import { useRouter } from "next/navigation"
 import { TemplatesDialog } from "@/components/templates/template-dialog"
 import Search from "../../app/(routes)/workspace/_components/Search"
 
-export function NavMain({ items }) {
+export function NavMain({ items = [] }) {
   const { organization } = useOrganization()
   const { openOrganizationProfile } = useClerk()
   const { hasActiveSubscription } = UseSubscription()
@@ -41,15 +40,6 @@ export function NavMain({ items }) {
     })
   }
 
-  const handleSelectTemplate = (templateId) => {
-
-    toast({
-      title: "Template selected",
-      description: `Creating new document with ${templateId} template`,
-      variant:"success"
-    })
-  }
-
   return (
     <SidebarMenu>
       {items.map((item) => (
@@ -65,10 +55,8 @@ export function NavMain({ items }) {
                 <SidebarMenuButton isActive={item.isActive}>
                   <item.icon />
                   <span>{item.title}</span>
-                  
                 </SidebarMenuButton>
               }
-              onSelectTemplate={handleSelectTemplate}
             />
           ) :  item.title === "Search" ? (
             <Search
@@ -79,7 +67,14 @@ export function NavMain({ items }) {
                 </SidebarMenuButton>
               }
             />
-          ) : ""}
+          ) : (
+            <SidebarMenuButton
+              isActive={item.isActive}
+            >
+              <item.icon />
+              <span>{item.title}</span>
+            </SidebarMenuButton>
+          )}
         </SidebarMenuItem>
       ))}
     </SidebarMenu>

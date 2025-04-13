@@ -16,16 +16,13 @@ import { templates, templateCategories } from "@/lib/templates/templates";
 import { Crown } from "lucide-react";
 import { Badge } from "../ui/badge";
 import UseSubscription from "@/hooks/use-subscription";
+import { useToast } from "@/hooks/use-toast";
+import { useEditor } from "@/components/editor/editor-context";
 
-export function TemplatesDialog({ trigger, onSelectTemplate }) {
+export function TemplatesDialog({ trigger }) {
   const [open, setOpen] = React.useState(false);
-
-  const handleSelectTemplate = (templateId) => {
-    if (onSelectTemplate) {
-      onSelectTemplate(templateId);
-    }
-    setOpen(false);
-  };
+  const { toast } = useToast();
+  const editorRef = useEditor();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -64,7 +61,8 @@ export function TemplatesDialog({ trigger, onSelectTemplate }) {
                       <TemplateCard
                         key={template.id}
                         template={template}
-                        onClick={() => handleSelectTemplate(template.id)}
+                        editor={editorRef.current}
+                        onSelect={() => setOpen(false)}
                       />
                     ))}
                 </div>
@@ -77,19 +75,284 @@ export function TemplatesDialog({ trigger, onSelectTemplate }) {
   );
 }
 
-function TemplateCard({ template, onClick }) {
+function TemplateCard({ template, editor, onSelect }) {
   const { hasActiveSubscription } = UseSubscription();
+  const { toast } = useToast();
   const isProTemplate = template.status === "Pro";
   const isDisabled = isProTemplate && !hasActiveSubscription;
+
+  const handleTemplateSelect = () => {
+    if (!editor) {
+      toast({
+        title: "Editor not found",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      editor.commands.clearContent();
+      
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = template.content;
+
+      const processTextNode = (node) => {
+        const marks = [];
+        let parent = node.parentElement;
+        
+        while (parent && parent !== tempDiv) {
+          if (parent.tagName === 'STRONG' || parent.tagName === 'B') {
+            marks.push({ type: 'bold' });
+          }
+          parent = parent.parentElement;
+        }
+        
+        return {
+          type: 'text',
+          text: node.textContent || '',
+          marks: marks.length > 0 ? marks : undefined
+        };
+      };
+
+      const processNode = (node) => {
+        if (!node) return null;
+
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = node.textContent?.trim();
+          if (!text) return null;
+          return processTextNode(node);
+        }
+        
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const tagName = node.tagName.toLowerCase();
+          
+          switch (tagName) {
+            case 'strong':
+            case 'b':
+              return {
+                type: 'text',
+                text: node.textContent || '',
+                marks: [{ type: 'bold' }]
+              };
+            case 'br':
+              return {
+                type: 'hardBreak'
+              };
+            case 'p':
+              const pContent = Array.from(node.childNodes)
+                .map(processNode)
+                .filter(Boolean);
+              return pContent.length > 0 ? {
+                type: 'paragraph',
+                content: pContent
+              } : null;
+            default:
+              const text = node.textContent?.trim();
+              if (!text) return null;
+              return processTextNode(node);
+          }
+        }
+        
+        return null;
+      };
+
+      const processTableCell = (cell) => {
+        if (!cell) return [];
+
+        const result = [];
+        let currentParagraph = {
+          type: 'paragraph',
+          content: []
+        };
+
+        const flushParagraph = () => {
+          if (currentParagraph.content.length > 0) {
+            result.push({ ...currentParagraph });
+            currentParagraph = {
+              type: 'paragraph',
+              content: []
+            };
+          }
+        };
+
+        cell.childNodes.forEach(node => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            const text = node.textContent?.trim();
+            if (text) {
+              currentParagraph.content.push(processTextNode(node));
+            }
+          } else if (node.nodeType === Node.ELEMENT_NODE) {
+            const tagName = node.tagName.toLowerCase();
+            
+            if (tagName === 'p') {
+              flushParagraph();
+              const content = Array.from(node.childNodes)
+                .map(processNode)
+                .filter(Boolean);
+              if (content.length > 0) {
+                result.push({
+                  type: 'paragraph',
+                  content
+                });
+              }
+            } else if (tagName === 'br') {
+              flushParagraph();
+            } else if (tagName === 'strong' || tagName === 'b') {
+              currentParagraph.content.push({
+                type: 'text',
+                text: node.textContent || '',
+                marks: [{ type: 'bold' }]
+              });
+            } else {
+              const text = node.textContent?.trim();
+              if (text) {
+                currentParagraph.content.push(processTextNode(node));
+              }
+            }
+          }
+        });
+
+        flushParagraph();
+        return result.length > 0 ? result : [{ type: 'paragraph' }];
+      };
+
+      const content = Array.from(tempDiv.childNodes).map(node => {
+        if (!node) return null;
+
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = node.textContent?.trim();
+          if (!text) return null;
+          return {
+            type: 'paragraph',
+            content: [processTextNode(node)]
+          };
+        }
+        
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const tagName = node.tagName.toLowerCase();
+          
+          switch (tagName) {
+            case 'h1':
+            case 'h2':
+            case 'h3':
+              const headingContent = Array.from(node.childNodes)
+                .map(processNode)
+                .filter(Boolean);
+              return headingContent.length > 0 ? {
+                type: 'heading',
+                attrs: { level: parseInt(tagName[1]) },
+                content: headingContent
+              } : null;
+            case 'p':
+              const pContent = Array.from(node.childNodes)
+                .map(processNode)
+                .filter(Boolean);
+              return pContent.length > 0 ? {
+                type: 'paragraph',
+                content: pContent
+              } : null;
+            case 'ul':
+              const ulContent = Array.from(node.children)
+                .map(li => {
+                  const liContent = Array.from(li.childNodes)
+                    .map(processNode)
+                    .filter(Boolean);
+                  return liContent.length > 0 ? {
+                    type: 'listItem',
+                    content: [{
+                      type: 'paragraph',
+                      content: liContent
+                    }]
+                  } : null;
+                })
+                .filter(Boolean);
+              return ulContent.length > 0 ? {
+                type: 'bulletList',
+                content: ulContent
+              } : null;
+            case 'ol':
+              const olContent = Array.from(node.children)
+                .map(li => {
+                  const liContent = Array.from(li.childNodes)
+                    .map(processNode)
+                    .filter(Boolean);
+                  return liContent.length > 0 ? {
+                    type: 'listItem',
+                    content: [{
+                      type: 'paragraph',
+                      content: liContent
+                    }]
+                  } : null;
+                })
+                .filter(Boolean);
+              return olContent.length > 0 ? {
+                type: 'orderedList',
+                content: olContent
+              } : null;
+            case 'table':
+              const rows = Array.from(node.children)
+                .filter(child => child.tagName.toLowerCase() === 'tr')
+                .map(row => ({
+                  type: 'tableRow',
+                  content: Array.from(row.children).map(cell => {
+                    const cellType = cell.tagName.toLowerCase() === 'th' ? 'tableHeader' : 'tableCell';
+                    return {
+                      type: cellType,
+                      content: processTableCell(cell)
+                    };
+                  })
+                }));
+              
+              if (rows.length === 0) return null;
+              
+              return {
+                type: 'table',
+                content: rows
+              };
+            default:
+              const text = node.textContent?.trim();
+              if (!text) return null;
+              return {
+                type: 'paragraph',
+                content: [processTextNode(node)]
+              };
+          }
+        }
+        
+        return null;
+      }).filter(Boolean);
+
+      if (content.length === 0) {
+        throw new Error("No content was generated from the template");
+      }
+
+      editor.commands.setContent(content);
+      editor.commands.focus();
+
+      toast({
+        title: "Template applied",
+        variant: "success",
+      });
+      
+      onSelect?.();
+    } catch (error) {
+      console.error("Template processing error:", error);
+      toast({
+        title: "Error applying template",
+        description: error.message || "Failed to apply the template",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <button
       className={cn(
         "group flex flex-col items-start gap-2 rounded-lg border p-4 text-left transition-colors",
         "hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        isDisabled && "opacity-60 cursor-not-allowed hover:bg-transparent"
+        isDisabled && "opacity-60 cursor-not-allowed hover:bg-transparent border-yellow-500"
       )}
-      onClick={() => !isDisabled && onClick()}
+      onClick={() => !isDisabled && handleTemplateSelect()}
       disabled={isDisabled}
     >
       <div className="flex items-center justify-between w-full">

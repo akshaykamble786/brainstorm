@@ -26,7 +26,7 @@ import { Threads } from "./threads";
 import { AddCommentSelector } from "./selectors/add-comment-selector";
 import { FontSelector } from "./selectors/font-selector";
 
-export const Editor = ({ setCharsCount , onContentChange, onEditorReady}) => {
+export const Editor = ({ setCharsCount, onContentChange, onEditorReady }) => {
   const liveblocks = useLiveblocksExtension({
     offlineSupport_experimental: true,
   });
@@ -68,7 +68,7 @@ export const Editor = ({ setCharsCount , onContentChange, onEditorReady}) => {
               handleImageDrop(view, event, moved, uploadFn),
             attributes: {
               class:
-                "prose dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full",
+                "prose dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-p:my-4 prose-ul:my-4 prose-ol:my-4 prose-li:my-2",
             },
           }}
           onUpdate={handleUpdate}

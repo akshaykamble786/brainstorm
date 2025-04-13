@@ -1,16 +1,18 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import DocumentHeader from "./DocumentHeader";
 import DocumentInfo from "./DocumentInfo";
 import { Loader2Icon } from "lucide-react";
 import { Editor } from "@/components/editor/editor";
 import { ClientSideSuspense } from "@liveblocks/react/suspense";
 import { Chat } from "./Chat";
+import { TemplatesDialog } from "@/components/templates/template-dialog";
+import { useEditor } from "@/components/editor/editor-context";
 
 const DocumentEditor = ({ params }) => {
   const [charsCount, setCharsCount] = useState(0);
   const [documentContent, setDocumentContent] = useState("");
   const [isEditorReady, setIsEditorReady] = useState(false);
-  const editorRef = useRef(null);
+  const editorRef = useEditor();
 
   const handleEditorReady = (editor) => {
     editorRef.current = editor;
@@ -50,6 +52,7 @@ const DocumentEditor = ({ params }) => {
           editor: editorRef.current,
         }}
       />
+      <TemplatesDialog editor={editorRef.current} />
     </div>
   );
 };

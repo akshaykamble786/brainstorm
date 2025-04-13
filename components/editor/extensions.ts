@@ -71,25 +71,25 @@ const table = Table.configure({
   resizable: true,
   allowTableNodeSelection: true,
   HTMLAttributes: {
-    class: "table-auto border-collapse border border-slate-200 w-full",
+    class: "table-auto border-collapse border border-slate-200 w-full my-4 bg-white dark:bg-transparent prose-p:my-0 min-w-[400px]",
   },
 });
 
 const tableCell = TableCell.configure({
   HTMLAttributes: {
-    class: "border border-slate-200 p-2",
+    class: "border border-slate-200 p-3 align-top min-w-[100px] prose-p:my-1 relative",
   },
 });
 
 const tableHeader = TableHeader.configure({
   HTMLAttributes: {
-    class: "border border-slate-200 p-2 bg-background font-bold",
+    class: "border border-slate-200 p-3 bg-slate-50 dark:bg-slate-800 font-bold text-left align-top prose-p:my-1 relative",
   },
 });
 
 const tableRow = TableRow.configure({
   HTMLAttributes: {
-    class: "border border-slate-200",
+    class: "border-b border-slate-200 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 prose-p:my-1",
   },
 });
 
