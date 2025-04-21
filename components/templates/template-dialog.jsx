@@ -365,7 +365,7 @@ function TemplateCard({ template, editor, onSelect }) {
         >
           <template.icon className="h-5 w-5" />
         </div>
-        {template.status === "Pro" && (
+        {template.status === "Pro" && !hasActiveSubscription && (
           <Badge
             variant={hasActiveSubscription ? "default" : "default"}
             className="ml-2 border-yellow-500"

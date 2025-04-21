@@ -138,7 +138,7 @@ const CreateWorkspace = () => {
             />
           </div>
 
-          <div className='mt-6 flex items-center justify-between'>
+          {/* <div className='mt-6 flex items-center justify-between'>
             <div className='flex items-center gap-2'>
               {isPrivate ? <Lock className="h-4 w-4" /> : <Globe className="h-4 w-4" />}
               <span className='text-sm'>
@@ -149,13 +149,13 @@ const CreateWorkspace = () => {
               checked={!isPrivate}
               onCheckedChange={(checked) => setIsPrivate(!checked)}
             />
-          </div>
+          </div> */}
           
-          <p className='text-sm text-gray-500 mt-2'>
+          {/* <p className='text-sm text-gray-500 mt-2'>
             {isPrivate 
               ? 'Only you can access this workspace. No one else can view or collaborate.'
               : 'Anyone with the link can view and comment. You can invite specific people to collaborate.'}
-          </p>
+          </p> */}
 
           <div className="mt-7 flex justify-end gap-6">
             <Button 

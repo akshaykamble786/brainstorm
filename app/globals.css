@@ -102,6 +102,18 @@ h3.ce-header {
   }
 }
 
+@keyframes dots {
+  0%, 20% {
+    content: ".";
+  }
+  40% {
+    content: "..";
+  }
+  60%, 100% {
+    content: "...";
+  }
+}
+
 *::-webkit-scrollbar {
   width: 15px;
 }

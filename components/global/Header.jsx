@@ -14,7 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import Logo from "./Logo";
-import { SignOutButton, useAuth, UserButton } from "@clerk/nextjs";
+import { useAuth, UserButton } from "@clerk/nextjs";
 import { ThemeToggle } from "@/app/(routes)/dashboard/_components/ThemeToggle";
 
 const routes = [
@@ -71,18 +71,19 @@ const Header = () => {
                   p-6 no-underline
                   outline-none
                   focus:shadow-md
+                  text-black dark:text-white
                   "
                   >
                     Welcome
                   </span>
                 </li>
-                <ListItem href="#" title="Introduction">
+                <ListItem href="/dashboard" title="Introduction">
                   Write, Plan & Organize with our cutting edge AI
                 </ListItem>
-                <ListItem href="#" title="AI Integration">
+                <ListItem href="/pricing" title="AI Integration">
                   AI integration to help you ease in.
                 </ListItem>
-                <ListItem href="#" title="Diverse Templates">
+                <ListItem href="/dashboard" title="Diverse Templates">
                   Templates for project, travel, meal, organization...etc.
                 </ListItem>
               </ul>
@@ -103,10 +104,10 @@ const Header = () => {
             </NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid w-[400px] gap-3 p-4 md:grid-row-2">
-                <ListItem title="Pro Plan" href="#">
+                <ListItem title="Pro Plan" href="/pricing">
                   Unlock full power with collaboration
                 </ListItem>
-                <ListItem title="Free Plan" href="#">
+                <ListItem title="Free Plan" href="/dashboard">
                   Great for teams just starting out
                 </ListItem>
               </ul>
@@ -121,6 +122,7 @@ const Header = () => {
                 "font-normal": true,
                 "text-lg": true,
               })}
+              href="/pricing"
             >
               About
             </NavigationMenuLink>
@@ -129,22 +131,14 @@ const Header = () => {
         </NavigationMenuList>
       </NavigationMenu>
 
-      <aside className="flex w-full justify-end gap-4">
+      <aside className="flex w-full justify-end gap-3">
         {isSignedIn ? (
           <>
             <Link href="/dashboard">
-              <Button variant="outline" className="px-3 hidden sm:block">
-                Dashboard &rarr;
+              <Button variant="outline" className="px-3">
+                Dashboard
               </Button>
             </Link>
-            <SignOutButton>
-              <Button
-                variant="btn-primary"
-                className="whitespace-nowrap text-md hover:opacity-70"
-              >
-                Log out
-              </Button>
-            </SignOutButton>
             <UserButton/>
             <ThemeToggle />
           </>
@@ -180,10 +174,10 @@ const ListItem = React.forwardRef(({ className, title, children, ...props }, ref
           )}
           {...props}
         >
-          <div className="text-white text-sm font-medium leading-none">
+           <div className="text-black dark:text-white text-sm font-medium leading-none">
             {title}
           </div>
-          <p className="group-hover:text-white/70 line-clamp-2 text-sm leading-snug text-white/40">
+          <p className="group-hover:text-black/70 dark:group-hover:text-white/70 line-clamp-2 text-sm leading-snug text-black/60 dark:text-white/40">
             {children}
           </p>
         </a>

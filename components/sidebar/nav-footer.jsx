@@ -81,10 +81,6 @@ export default function Navfooter() {
                                 <BadgeCheck className="mr-1.5 size-5" />
                                 Account
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => router.push('/billing')}>
-                                <CreditCard className="mr-1.5 size-5" />
-                                Billing
-                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => router.push('/pricing')}>
                                 <DollarSign className="mr-1.5 size-5" />
                                 Pricing

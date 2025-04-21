@@ -40,9 +40,9 @@ const TitleSection = ({
       className="flex flex-col gap-4 justify-center items-start md:items-center"
     >
       {isVisible && (
-        <article className="rounded-full p-[1px] text-sm dark:bg-gradient-to-r dark:from-brand-primaryBlue dark:to-brand-primaryPurple">
+        <article className="rounded-full p-[1px] text-sm bg-gradient-to-r from-brand-primaryBlue to-brand-primaryPurple">
           <TextEffect
-            className="rounded-full px-3 py-1 dark:bg-black"
+            className="rounded-full px-3 py-1 dark:bg-black text-white"
             per="word"
             preset="blur"
             delay={0.5}

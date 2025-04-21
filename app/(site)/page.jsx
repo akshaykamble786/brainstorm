@@ -21,7 +21,7 @@ const HomePage = () => {
         <TitleSection
           pill="✨ Your workspace, Perfected with AI"
           title="Take a backseat, let AI take control"
-          subheading="AI-Powered Planning and Collaboration at Your Fingertips"
+          subheading="AI-Powered Planning and Collaboration at your Fingertips"
         />
         <div className="flex gap-4">
           <div className="bg-white p-[2px] mt-6 rounded-xl bg-gradient-to-r from-primary to-brand-primaryBlue sm:w-[200px]">
@@ -74,7 +74,7 @@ const HomePage = () => {
         <div className="w-[30%] blur-[120px] rounded-full h-32 absolute bg-brand-primaryBlue/50 -z-10 top-22" />
         <TitleSection
           title="Remember nothing, organize everything"
-          subheading="Capture your ideas, thoughts, and meeting notes in a structured and oranized manner with the help of AI"
+          subheading="Capture your ideas, thoughts, and meeting notes in a structured and organized manner with the help of AI"
           pill="Features"
         />
         <div className="mt-10 max-w-[450px] flex justify-center items-center relative sm:ml-0 rounded-2xl border-8 border-washed-purple-300 border-opacity-10">
@@ -86,8 +86,7 @@ const HomePage = () => {
         <div className="mt-20 px-4 sm:px-6 flex flex-col overflow-x-hidden overflow-visible ">
           <TitleSection
             title="Why Brainstorm?"
-            subheading="Join thousands of satisfied users who rely on our platform for their 
-          personal and professional productivity needs"
+            subheading="Join thousands of satisfied users who rely on our platform for their personal and professional productivity needs"
             pill="Testimonials"
           />
           {[...Array(2)].map((arr, index) => (
@@ -210,10 +209,7 @@ const HomePage = () => {
                         ""
                       )}
                     </div>
-                    <Button 
-                      variant="default" 
-                      className="w-full"
-                    >
+                    <Button variant="default" className="w-full">
                       {card.planType === PRICING_PLANS.proplan
                         ? "Go Pro"
                         : "Get Started"}

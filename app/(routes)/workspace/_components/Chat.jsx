@@ -38,6 +38,19 @@ import UseSubscription from "@/hooks/use-subscription";
 import { useEditor } from "@/components/editor/editor-context";
 import { useRouter } from "next/navigation";
 
+const LoadingSkeleton = () => {
+  return (
+    <div className="flex flex-col items-start space-y-2 px-4 py-3 text-sm">
+      <div className="inline-block p-2 rounded-lg bg-background">
+        <div className="text-white animate-pulse">
+          Thinking
+          <span className="after:content-['...'] after:animate-dots after:inline-block after:w-4"></span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export function Chat() {
   const [isOpen, setIsOpen] = useState(false);
   const [documentContext, setDocumentContext] = useState("");
@@ -112,11 +125,11 @@ export function Chat() {
 
       updateContext();
 
-      editorRef.current.on('transaction', updateContext);
-      
+      editorRef.current.on("transaction", updateContext);
+
       return () => {
         if (editorRef.current) {
-          editorRef.current.off('transaction', updateContext);
+          editorRef.current.off("transaction", updateContext);
         }
       };
     }
@@ -279,7 +292,7 @@ export function Chat() {
 
     try {
       if (!hasActiveSubscription) {
-        const { allowed, remainingMessages } = 
+        const { allowed, remainingMessages } =
           await rateLimitService.checkAndIncrementUsage(user.id);
 
         if (!allowed) {
@@ -310,7 +323,6 @@ export function Chat() {
 
       setInput(query);
       setSuggestedQuery(query);
-
     } catch (error) {
       console.error("Error checking rate limit:", error);
       toast({
@@ -365,7 +377,7 @@ export function Chat() {
 
     try {
       if (!hasActiveSubscription) {
-        const { allowed, remainingMessages } = 
+        const { allowed, remainingMessages } =
           await rateLimitService.checkAndIncrementUsage(user.id);
 
         if (!allowed) {
@@ -392,11 +404,10 @@ export function Chat() {
       }
 
       await handleSubmit(e);
-
     } catch (error) {
       console.error("Error submitting form:", error);
       toast({
-        title:  `${error}`,
+        title: `${error}`,
         description: "Please try again",
         variant: "destructive",
       });
@@ -599,6 +610,8 @@ export function Chat() {
                         )}
                       </div>
                     ))}
+
+                    {isLoading && <LoadingSkeleton />}
 
                     {error && (
                       <div className="w-full items-center justify-center flex gap-3 p-4">

@@ -9,12 +9,27 @@ const Footer = () => {
         <Link href={"/"} className="flex items-center gap-2 mb-4 md:mb-0">
           <Logo />
         </Link>
-        <div className="flex flex-col md:flex-row md:space-x-6 text-center md:text-left space-y-2 md:space-y-0">
+        <div className="flex flex-row space-x-6 text-center">
           <p className="text-xs text-gray-400">
-            © 2024 Brainstorm. All rights reserved
+            Built by&nbsp;
+            <a
+              href="https://www.x.com/awkshhay"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <u>Akshay Kamble</u>
+            </a>
           </p>
-          <p className="text-xs text-gray-400">Terms of Service</p>
-          <p className="text-xs text-gray-400">Privacy</p>
+          <p className="text-xs text-gray-400">
+            <a
+              href="https://www.github.com/akshaykamble786/brainstorm"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Source code available on&nbsp;
+              <u>GitHub</u>
+            </a>
+          </p>
         </div>
       </div>
     </footer>

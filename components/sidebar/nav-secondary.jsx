@@ -26,20 +26,22 @@ export function NavSecondary({ items, ...props }) {
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               {item.title === "Calendar" ? (
-                <>
+                <div className="relative">
                   <SidebarMenuButton onClick={handleCalendarClick}>
                     <item.icon />
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                   {showCalendar && (
+                    <div className="fixed left-[240px] translate-y-[-100%] z-[100]">
                     <Calendar
                       mode="single"
                       selected={date}
                       onSelect={setDate}
                       className="rounded-md border bg-background text-foreground"
                     />
+                    </div>
                   )}
-                </>
+                </div>
               ) : item.title === "Trash" ? 
               <Trash trigger={
                 <SidebarMenuButton isActive={item.isActive}>
