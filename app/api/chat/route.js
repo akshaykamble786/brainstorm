@@ -65,7 +65,7 @@ export async function POST(req) {
     const formattedMessages = formatPrompt(messages, documentContext);
 
     const stream = await streamText({
-      model: google("gemini-1.5-pro"),
+      model: google("gemini-2.5-pro"),
       messages: formattedMessages,
       temperature: 0.7,
     });

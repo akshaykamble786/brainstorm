@@ -15,7 +15,7 @@ export async function POST(req: Request): Promise<Response> {
 
   const { prompt, option, command } = await req.json();
 
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
   const messages = match(option)
     .with("continue", () => ({
